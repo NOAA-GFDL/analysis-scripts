@@ -9,7 +9,7 @@ Output = NamedTuple("Output", ["dataset", "png_path"])
 
 
 class AnalysisScript(object):
-    """Abstract base clase for analysis scripts.  User-defined analysis scripts
+    """Abstract base class for analysis scripts.  User-defined analysis scripts
        should inhert from this class and override the requires and run_analysis methods.
 
     Attributes:
@@ -23,7 +23,7 @@ class AnalysisScript(object):
         self.title = title
 
     def requires(self):
-        """Provides metadata describing what is needed for this analysis to run
+        """Provides metadata describing what is needed for this analysis to run.
 
         Returns:
             A list of Metric objects.
