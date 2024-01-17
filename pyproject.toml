@@ -16,7 +16,7 @@ authors = [
     {name = "developers"},
 ]
 maintainers = [
-    {name = "developer", email = "developer-email"},
+    {name = "developer", email = "developer-email@address.domain"},
 ]
 description = "Framework for analyzing GFDL model output"
 readme = "README.md"

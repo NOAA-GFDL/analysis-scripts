@@ -4,8 +4,8 @@ import intake
 import intake_esm
 
 
-Metric = NamedTuple("Metric", ["name", "frequency"])
-Output = NamedTuple("Output", ["dataset", "png_path"])
+Metric = namedtuple("Metric", ["name", "frequency"])
+Output = namedtuple("Output", ["dataset", "png_path"])
 
 
 class AnalysisScript(object):
