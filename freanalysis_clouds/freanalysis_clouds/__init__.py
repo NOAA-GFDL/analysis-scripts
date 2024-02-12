@@ -101,8 +101,11 @@ class AerosolAnalysisScript(AnalysisScript):
 
         Args:
             catalog: Path to a catalog.
+            png_dir: Path to the directory where the figures will be made.
+            reference_catalog: Path to a catalog of reference data.
 
         Returns:
+            A list of paths to the figures that were created.
         """
 
         # Connect to the catalog and find the necessary datasets.
@@ -130,3 +133,4 @@ class AerosolAnalysisScript(AnalysisScript):
         figure.add_map(maps["middle_cloud_fraction"], "Middle Clouds", 2, colorbar_range=[0, 100])
         figure.add_map(maps["low_cloud_fraction"], "Low Clouds", 3, colorbar_range=[0, 100])
         figure.save(Path(png_dir) / "cloud-fraction.png")
+        return [Path(png_dir) / "cloud-fraction.png",]

@@ -237,8 +237,11 @@ class RadiationAnalysisScript(AnalysisScript):
 
         Args:
             catalog: Path to a catalog.
+            png_dir: Path to the directory where the figures will be made.
+            reference_catalog: Path to a catalog of reference data.
 
         Returns:
+            A list of paths to the figures that were created.
         """
 
         # Connect to the catalog and find the necessary datasets.
@@ -273,21 +276,26 @@ class RadiationAnalysisScript(AnalysisScript):
                     variable,
                 )
 
+        figure_paths = []
+
         # OLR anomally timeseries.
         figure = timeseries_and_anomalies(timeseries["rlut"], anomalies["rlut"],
                                           "OLR Global Mean & Anomalies")
         figure.save(Path(png_dir) / "olr-anomalies.png")
+        figure_paths.append(Path(png_dir) / "olr-anomalies.png")
 
         # OLR.
         figure = radiation_decomposition(maps["rlutcsaf"], maps["rlutaf"],
                                          maps["rlutcs"], maps["rlut"], "OLR")
         figure.save(Path(png_dir) / "olr.png")
+        figure_paths.append(Path(png_dir) / "olr.png")
 
         # SW TOTA.
         figure = radiation_decomposition(maps["rsutcsaf"], maps["rsutaf"],
                                          maps["rsutcs"], maps["rsut"],
                                          "Shortwave Outgoing Toa")
         figure.save(Path(png_dir) / "sw-up-toa.png")
+        figure_paths.append(Path(png_dir) / "sw-up-toa.png")
 
         # Surface radiation budget.
         surface_budget = []
@@ -296,6 +304,7 @@ class RadiationAnalysisScript(AnalysisScript):
                                   maps[f"rlus{suffix}"] - maps[f"rsus{suffix}"])
         figure = radiation_decomposition(*surface_budget, "Surface Radiation Budget")
         figure.save(Path(png_dir) / "surface-radiation-budget.png")
+        figure_paths.append(Path(png_dir) / "surface-radiation-budget.png")
 
         # TOA radiation budget.
         toa_budget = []
@@ -303,3 +312,5 @@ class RadiationAnalysisScript(AnalysisScript):
             toa_budget.append(maps[f"rsdt"] - maps[f"rlut{suffix}"] - maps[f"rsut{suffix}"])
         figure = radiation_decomposition(*toa_budget, "TOA Radiation Budget")
         figure.save(Path(png_dir) / "toa-radiation-budget.png")
+        figure_paths.append(Path(png_dir) / "toa-radiation-budget.png")
+        return figure_paths

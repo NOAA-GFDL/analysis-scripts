@@ -175,13 +175,16 @@ class AerosolAnalysisScript(AnalysisScript):
             },
         })
 
-    def run_analysis(self, catalog, png_dir):
+    def run_analysis(self, catalog, png_dir, reference_catalog=None):
         """Runs the analysis and generates all plots and associated datasets.
 
         Args:
             catalog: Path to a catalog.
+            png_dir: Path to the directory where the figures will be made.
+            reference_catalog: Path to a catalog of reference data.
 
         Returns:
+            A list of paths to the figures that were created.
         """
 
         # Connect to the catalog and find the necessary datasets.
@@ -213,6 +216,7 @@ class AerosolAnalysisScript(AnalysisScript):
                     invert_y_axis=True,
                 )
 
+        figure_paths = []
         for name in self.metadata.variables().keys():
             if name.endswith("column"): continue
             figure = zonal_mean_vertical_and_column_integrated_map(
@@ -221,3 +225,5 @@ class AerosolAnalysisScript(AnalysisScript):
                 f"{name.replace('_', ' ')} Mass",
             )
             figure.save(Path(png_dir) / f"{name}.png")
+            figure_paths.append(Path(png_dir)/ f"{name}.png")
+        return figure_paths
