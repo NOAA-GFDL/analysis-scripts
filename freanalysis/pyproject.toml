@@ -1,0 +1,24 @@
+[build-system]
+requires = [
+    "setuptools >= 40.9.0",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "freanalysis"
+version = "0.1"
+requires-python = ">= 3.6"
+authors = [
+    {name = "developers"},
+]
+maintainers = [
+    {name = "developer", email = "developer-email@address.domain"},
+]
+description = "Flexible Runtime Environment analysis package"
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python"
+]
+
+[project.urls]
+Repository = "https://github.com/menzel-gfdl/analysis-scripts.git"

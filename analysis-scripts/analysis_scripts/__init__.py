@@ -1,11 +1,4 @@
-from collections import namedtuple
-
-import intake
-import intake_esm
-
-
-Metric = namedtuple("Metric", ["name", "frequency"])
-Output = namedtuple("Output", ["dataset", "png_path"])
+import json
 
 
 class AnalysisScript(object):
@@ -13,29 +6,34 @@ class AnalysisScript(object):
        should inhert from this class and override the requires and run_analysis methods.
 
     Attributes:
-       catalog: intake_esm Catalog object.
        description: Longer form description for the analysis.
        title: Title that describes the analysis.
     """
-    def __init__(self, catalog_path, title, description):
-        self.catalog = intake.open_esm_datastore(catalog_path)
-        self.description = description
-        self.title = title
+    def __init__(self):
+        """Instantiates an object.  The user should provide a description and title."""
+        raise NotImplementedError("you must override this function.")
+        self.description = None
+        self.title = None
 
     def requires(self):
         """Provides metadata describing what is needed for this analysis to run.
 
         Returns:
-            A list of Metric objects.
+            A json string describing the metadata.
         """
         raise NotImplementedError("you must override this function.")
-        return [Metric(None, None),]
+        return json.dumps("{json of metadata MDTF format.}")
 
-    def run_analysis(self):
+    def run_analysis(self, catalog, png_dir, reference_catalog=None):
         """Runs the analysis and generates all plots and associated datasets.
 
+        Args:
+            catalog: Path to a model output catalog.
+            png_dir: Directory to store output png figures in.
+            reference_catalog: Path to a catalog of reference data.
+
         Returns:
-            A list of Output objects.
+            A list of png figures.
         """
         raise NotImplementedError("you must override this function.")
-        return [Output(None, None),]
+        return ["figure1.png", "figure2.png",]
