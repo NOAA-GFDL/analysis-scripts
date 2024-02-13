@@ -10,7 +10,7 @@ output data.
 ### Requirements
 The code in this repository is broken up into components:
 
-- analysis-scripts - A very simple package that just defines an abstract base clases that
+- analysis-scripts - A very simple package that just defines an abstract base class that
                      all user-created plugins should inherit from.
 - figure_tools - An optional package that contains some helper functions and classes
                  for making common plots.
