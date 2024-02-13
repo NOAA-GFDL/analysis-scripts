@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 
@@ -50,7 +51,7 @@ def create_catalog(pp_dir, output_path):
                 {"column_name": "cell_methods", "vocabulary": ""},
                 {"column_name": "path", "vocabulary": ""}
             ],
-            "assets": {"column_name": "path", "format": "netcdf","format_column_name": null},
+            "assets": {"column_name": "path", "format": "netcdf","format_column_name": None},
             "aggregation_control": {
                 "variable_column_name": "variable_id",
                 "groupby_attrs": [
@@ -76,11 +77,12 @@ def create_catalog(pp_dir, output_path):
                 ]
             },
             "id": "",
-            "description": null,
-            "title": null,
-            "last_updated": "",
-            "catalog_file": csv_path
+            "description": None,
+            "title": None,
+            "last_updated": "2023-05-07T16:35:52Z",
+            "catalog_file": str(csv_path)
         }
+        json.dump(json_str, output)
 
     with open(csv_path, "w") as output:
         output.write(",".join(columns) + "\n")
