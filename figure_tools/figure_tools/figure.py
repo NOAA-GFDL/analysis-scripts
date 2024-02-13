@@ -43,25 +43,25 @@ class Figure(object):
                                        position, **optional_args)
 
         # Set the colorbar properties.
-        if colorbar_range is None:
+        if colorbar_range == None:
             levels = num_levels
         else:
             # There seems to be some strange behavior if the number of level is too
             # big for a given range.
             levels = linspace(colorbar_range[0], colorbar_range[-1], num_levels, endpoint=True)
+            if extend == None:
+                data_max = max(map_.data)
+                data_min = min(map_.data)
+                if data_max > colorbar_range[1] and data_min < colorbar_range[0]:
+                    extend = "both"
+                elif data_max > colorbar_range[1]:
+                    extend = "max"
+                elif data_min < colorbar_range[0]:
+                    extend = "min"
         if normalize_colors:
             norm = colors.CenteredNorm(vcenter=colorbar_center)
         else:
             norm = None
-        if extend == None:
-            data_max = max(map_.data)
-            data_min = min(map_.data)
-            if data_max > colorbar_range[1] and data_min < colorbar_range[0]:
-                extend = "both"
-            elif data_max > colorbar_range[1]:
-                extend = "max"
-            elif data_min < colorbar_range[0]:
-                extend = "min"
 
         # Make the map.
         optional_args = {"levels": levels, "cmap": colormap, "norm": norm, "extend": extend}
