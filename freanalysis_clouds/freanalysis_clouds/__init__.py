@@ -36,6 +36,7 @@ class Metadata:
 
     def catalog_key(self, name) -> str:
         return ".".join([
+            self.source_id,
             self.experiment_id,
             self.frequency,
             self.member_id,
