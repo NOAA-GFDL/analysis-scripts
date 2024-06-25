@@ -8,47 +8,52 @@ by a simple web application to provide users an easy interface to interact with 
 output data.
 
 ### Requirements
-The only software packages that are required are `intake` and `intake-esm`.
+The code in this repository is broken up into components:
 
-### How to use this framework.
-Custom analysis scripts classes can be created that inherit the `AnalysisScript` base
-class, then override its `requires` and `run_analysis` methods. For example:
+- analysis-scripts - A very simple package that just defines an abstract base class that
+                     all user-created plugins should inherit from.
+- figure_tools - An optional package that contains some helper functions and classes
+                 for making common plots.
+- freanalysis - A package that is designed to be used by whatever workflow is responsible
+                for running the analysis.
+- freanalysis_aerosol - A plugin that creates aerosl mass figures.
+- freanalysis_clouds - A plugin that creates cloud amount figures.
+- freanalysis_radiation - A plugin that creates radiative flux figures.
+
+### How to install everything
+For now I'd recommend creating a virtual enviroment, and then installing each of the
+packages listed above:
+
+```bash
+$ python3 -m venv env
+$ source env/bin/activate
+$ pip install --upgrade pip
+$ cd analysis-scripts; pip install .; cd ..
+$ cd figure_tools; pip install .; cd ..
+$ cd freanalysis; pip install .; cd ..
+$ cd freanalysis_aerosol; pip install .; cd ..
+$ cd freanalysis_clouds; pip install .; cd ..
+$ cd freanalysis_radiation; pip install .; cd ..
+```
+
+# Running an analysis plugin
+In order to run a plugin, you must first create a data catalog and can then perform
+the analysis:
 
 ```python3
-from analysis_scripts import AnalysisScript, Metric, Output
+from freanalysis.create_catalog import create_catalog
+from freanalysis.plugins import list_plugins, plugin_requirements, run_plugin
 
-class NewAnalysis(AnalysisScript):
-    """A new analysis script that inherits from the abstract base class
 
-    Attributes:
-       catalog: intake_esm Catalog object.
-       description: Longer form description for the analysis.
-       title: Title that describes the analysis.
-    """
-    def __init__(self, catalog_path, title, description):
-        self.catalog = intake.open_esm_datastore(catalog_path)
-        self.description = description
-        self.title = title
+# Create a data catalog.
+create_catalog(pp_dir, "catalog.json")
 
-    def requires(self):
-        """Provides metadata describing what is needed for this analysis to run
+# Show the installed plugins.
+list_plugins()
 
-        Returns:
-            A list of Metric objects.
-        """
-        return [Metric("olr", "yearly"),]
-
-    def run_analysis(self, *args, **kwargs):
-        """Runs the analysis and generates all plots and associated datasets.
-
-        Returns:
-            A list of Output objects.
-        """
-        # Finds the necessary data in the catalog.
-        dataset = self.catalog.to_dataset_dict(...
-
-        # Creates the plot and saves it as a png file.
-        plt.plot(..
-        plt.savefig(png_file)
-        return [Output(dataset, png_file),]
+# Run the radiative fluxes plugin.
+name = "freanalysis_radiation"
+reqs = plugin_requirements(name)
+print(reqs)
+run_plugin(name, "catalog.json", "pngs")
 ```
