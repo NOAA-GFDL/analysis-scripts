@@ -13,8 +13,8 @@ class Metadata:
     activity_id: str = "dev"
     institution_id: str = ""
     source_id: str = ""
-    experiment_id: str = "c96L65_am5f4b4r1-newrad_amip"
-    frequency: str = "monthly"
+    experiment_id: str = "c96L65_am5f7b11r0_amip"
+    frequency: str = "P1M"
     modeling_realm: str = "atmos"
     table_id: str = ""
     member_id: str = "na"
@@ -23,6 +23,7 @@ class Metadata:
     chunk_freq: str = ""
     platform: str = ""
     cell_methods: str = ""
+    chunk_freq: str = "P1Y"
 
     def catalog_search_args(self, name):
         return {
@@ -35,11 +36,13 @@ class Metadata:
 
     def catalog_key(self, name) -> str:
         return ".".join([
+            self.source_id,
             self.experiment_id,
             self.frequency,
             self.member_id,
             self.modeling_realm,
             name,
+            self.chunk_freq
         ])
 
     def variables(self):
@@ -125,7 +128,7 @@ class AerosolAnalysisScript(AnalysisScript):
                 datasets[self.metadata.catalog_key(variable)],
                 variable,
                 time_method="annual mean",
-                year=2010,
+                year=1980,
             )
 
         figure = Figure(num_rows=3, num_columns=1, title="Cloud Fraction", size=(16, 10))
