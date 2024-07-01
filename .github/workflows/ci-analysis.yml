@@ -29,7 +29,7 @@ jobs:
            ls archive/oar.gfdl.mdtf/MDTF-examples/mdtf-time-slice-example/gfdl.ncrc5-deploy-prod-openmp/pp/atmos/ts/monthly/1yr/
     - name: 'Generate catalog'
       run: |
-        $CONDA/envs/catalogbuilder/bin/python scripts/gen_intake_gfdl.py archive/oar.gfdl.mdtf/MDTF-examples/mdtf-time-slice-example/gfdl.ncrc5-deploy-prod-openmp/pp cats/gfdl_analysis_citest
+        $CONDA/envs/catalogbuilder/bin/python ray_cloud.py 
     - name: upload-artifacts1
       uses: actions/upload-artifact@v4
       with:
