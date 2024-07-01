@@ -25,16 +25,14 @@ jobs:
         conda install intakebuilder -c noaa-gfdl
     - name: Download sample cloud fields mid_cld_amt, low_cld_amt, high_cld_amt
       run: |
-           #mkdir -p archive/oar.gfdl.mdtf/MDTF-examples/mdtf-time-slice-example/gfdl.ncrc5-deploy-prod-openmp/pp/atmos/ts/monthly/1yr/  
-           curl -O ftp://nomads.gfdl.noaa.gov/1/oar.gfdl.mdtf/MDTF-examples/GFDL-CM4/data/atmos/ts/monthly/1yr/atmos.198001-198012.high_cld_amt.nc
-           pwd
-           ls 
+           mkdir -p archive/oar.gfdl.mdtf/MDTF-examples/mdtf-time-slice-example/gfdl.ncrc5-deploy-prod-openmp/pp/atmos/ts/monthly/1yr/ && cd archive/oar.gfdl.mdtf/MDTF-examples/mdtf-time-slice-example/gfdl.ncrc5-deploy-prod-openmp/pp/atmos/ts/monthly/1yr/ && curl -O ftp://nomads.gfdl.noaa.gov/1/oar.gfdl.mdtf/MDTF-examples/GFDL-CM4/data/atmos/ts/monthly/1yr/atmos.198001-198012.high_cld_amt.nc
+           ls /home/runner/work/analysis-scripts-fork/analysis-scripts-fork/archive/oar.gfdl.mdtf/MDTF-examples/mdtf-time-slice-example/gfdl.ncrc5-deploy-prod-openmp/pp/atmos/ts/monthly/1yr/
    # - name: 'Generate catalog'
    #   run: |
    #     $CONDA/bin/python tests/mdtf_timeslice_catalog.py 
     - name: 'Generate MDTF time-slice sample catalog with yaml'
       run: |
-         $CONDA/bin/python scripts/gen_intake_gfdl.py --config tests/mdtf_timeslice_catalog.yaml
+         $CONDA/bin/python tests/mdtf_timeslice_catalog.py
     - name: upload-artifacts1
       uses: actions/upload-artifact@v4
       with:
