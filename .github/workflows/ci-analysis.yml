@@ -35,10 +35,10 @@ jobs:
       with:
           name: workflow-artifacts1 
           path: |
-            cats/gfdl_analysis_citest.csv
-            cats/gfdl_analysis_citest.json
-            cats/gfdl_analysis_citest.csv
-            cats/gfdl_analysis_citest.json
+            gfdl_analysis_citest.csv
+            gfdl_analysis_citest.json
+            gfdl_analysis_citest.csv
+            gfdl_analysis_citest.json
     - name: Download all workflow run artifacts
       uses: actions/download-artifact@v4
     
