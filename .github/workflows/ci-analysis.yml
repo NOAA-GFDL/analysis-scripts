@@ -24,7 +24,7 @@ jobs:
         conda config --append channels conda-forge
         conda install intakebuilder -c noaa-gfdl
     - name: Download sample cloud fields mid_cld_amt, low_cld_amt, high_cld_amt
-      run: mkdir -p archive/oar.gfdl.mdtf/MDTF-examples/mdtf-time-slice-example/gfdl.ncrc5-deploy-prod-openmp/pp/atmos/ts/monthly/1yr/ && curl -O --verbose --ipv4 --connect-timeout 8 --max-time 1200 --retry 128 ftp://nomads.gfdl.noaa.gov/1/oar.gfdl.mdtf/MDTF-examples/GFDL-CM4/data/atmos/ts/monthly/1yr/atmos.198001-198012.high_cld_amt.nc
+      run: mkdir -p archive/oar.gfdl.mdtf/MDTF-examples/mdtf-time-slice-example/gfdl.ncrc5-deploy-prod-openmp/pp/atmos/ts/monthly/1yr/ && curl -O --verbose ftp://nomads.gfdl.noaa.gov/1/oar.gfdl.mdtf/MDTF-examples/GFDL-CM4/data/atmos/ts/monthly/1yr/atmos.198001-198012.high_cld_amt.nc
            ls archive/oar.gfdl.mdtf/MDTF-examples/mdtf-time-slice-example/gfdl.ncrc5-deploy-prod-openmp/pp/atmos/ts/monthly/1yr/
     - name: 'Generate catalog'
       run: |
