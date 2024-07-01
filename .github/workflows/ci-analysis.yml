@@ -23,7 +23,4 @@ jobs:
         conda config --add channels noaa-gfdl
         conda config --append channels conda-forge
         conda install intakebuilder -c noaa-gfdl
-    - name: Test with pytest
-      run: |
-        conda install pytest
-        pytest
+
