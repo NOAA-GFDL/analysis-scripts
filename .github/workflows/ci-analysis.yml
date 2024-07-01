@@ -23,9 +23,22 @@ jobs:
         conda config --add channels noaa-gfdl
         conda config --append channels conda-forge
         conda install intakebuilder -c noaa-gfdl
-
     - name: Download sample cloud fields mid_cld_amt, low_cld_amt, high_cld_amt
-      run: curl -O --verbose --ipv4 --connect-timeout 8 --max-time 1200 --retry 128 ftp://nomads.gfdl.noaa.gov/1/oar.gfdl.mdtf/MDTF-examples/GFDL-CM4/data/atmos/ts/monthly/1yr/atmos.198001-198012.high_cld_amt.nc
-
+      run: mkdir -p archive/oar.gfdl.mdtf/MDTF-examples/mdtf-time-slice-example/gfdl.ncrc5-deploy-prod-openmp/pp/atmos/ts/monthly/1yr/ && curl -O --verbose --ipv4 --connect-timeout 8 --max-time 1200 --retry 128 ftp://nomads.gfdl.noaa.gov/1/oar.gfdl.mdtf/MDTF-examples/GFDL-CM4/data/atmos/ts/monthly/1yr/atmos.198001-198012.high_cld_amt.nc
+           ls archive/oar.gfdl.mdtf/MDTF-examples/mdtf-time-slice-example/gfdl.ncrc5-deploy-prod-openmp/pp/atmos/ts/monthly/1yr/
+    - name: 'Generate catalog'
+      run: |
+        $CONDA/envs/catalogbuilder/bin/python scripts/gen_intake_gfdl.py archive/oar.gfdl.mdtf/MDTF-examples/mdtf-time-slice-example/gfdl.ncrc5-deploy-prod-openmp/pp cats/gfdl_analysis_citest
+    - name: upload-artifacts1
+      uses: actions/upload-artifact@v4
+      with:
+          name: workflow-artifacts1 
+          path: |
+            cats/gfdl_analysis_citest.csv
+            cats/gfdl_analysis_citest.json
+            cats/gfdl_analysis_citest.csv
+            cats/gfdl_analysis_citest.json
+    - name: Download all workflow run artifacts
+      uses: actions/download-artifact@v4
     
 
