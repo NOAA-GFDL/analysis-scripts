@@ -17,20 +17,15 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Add conda to the system path
-      run: |
-        # $CONDA is an environment variable pointing to the root of the miniconda directory
-        echo $CONDA/bin >> $GITHUB_PATH
     - name: Install dependencies
       run: |
-        conda config --add channels noaa-gfdl
-        conda config --append channels conda-forge
-        conda install intakebuilder -c noaa-gfdl
         python3 -m pip install --upgrade pip
         cd analysis-scripts; pip install .; cd ..
         cd figure_tools; pip install .; cd ..
         cd freanalysis; pip install .; cd ..
         cd freanalysis_clouds; pip install .; cd ..
+        git clone https://github.com/aradhakrishnanGFDL/CatalogBuilder catalogbuilder
+        cd catalogbuilder; pip install .; cd ..
         pip install pytest
     - name: Test freanalysis_clouds
       run: |
