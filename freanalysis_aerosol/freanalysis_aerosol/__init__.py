@@ -6,36 +6,23 @@ from analysis_scripts import AnalysisScript
 from figure_tools import LonLatMap, zonal_mean_vertical_and_column_integrated_map, \
                          ZonalMeanMap
 import intake
-import intake_esm
 
 
 @dataclass
 class Metadata:
-    activity_id: str = "dev"
-    institution_id: str = ""
-    source_id: str = "am5"
-    experiment_id: str = "c96L65_am5f7b11r0_amip"
-    frequency: str = "P1M"
-    modeling_realm: str = "atmos"
-    table_id: str = ""
-    member_id: str = "na"
-    grid_label: str = ""
-    temporal_subset: str = ""
-    chunk_freq: str = ""
-    platform: str = ""
-    cell_methods: str = ""
-    chunk_freq: str = "P1Y"
+    """Helper class that stores the metadata needed by the plugin."""
+    frequency: str = "monthly"
+    realm: str = "atmos"
 
-    def catalog_search_args(self, name):
-        return {
-            "experiment_id": self.experiment_id,
-            "frequency": self.frequency,
-            "member_id": self.member_id,
-            "modeling_realm": self.modeling_realm,
-            "variable_id": name,
-        }
+    @staticmethod
+    def variables():
+        """Helper function to make maintaining this script easier if the
+           catalog variable ids change.
 
-    def variables(self):
+        Returns:
+            Dictionary mapping the names used in this script to the catalog
+            variable ids.
+        """
         return {
             "black_carbon": "blk_crb",
             "black_carbon_column": "blk_crb_col",
@@ -81,6 +68,7 @@ class AerosolAnalysisScript(AnalysisScript):
             "dimensions": {
                 "lat": {"standard_name": "latitude"},
                 "lon": {"standard_name": "longitude"},
+                "pfull": {"standard_name": "air_pressure"},
                 "time": {"standard_name": "time"}
             },
             "varlist": {
@@ -167,16 +155,22 @@ class AerosolAnalysisScript(AnalysisScript):
             },
         })
 
-    def run_analysis(self, catalog, png_dir, reference_catalog=None):
+    def run_analysis(self, catalog, png_dir, reference_catalog=None, config={}):
         """Runs the analysis and generates all plots and associated datasets.
 
         Args:
             catalog: Path to a catalog.
             png_dir: Path to the directory where the figures will be made.
             reference_catalog: Path to a catalog of reference data.
+            config: Dictionary of catalog metadata.  Will overwrite the
+                    data defined in the Metadata helper class if they both
+                    contain the same keys.
 
         Returns:
             A list of paths to the figures that were created.
+
+        Raises:
+            ValueError if the catalog cannot be filtered correctly.
         """
 
         # Connect to the catalog and find the necessary datasets.
@@ -184,30 +178,23 @@ class AerosolAnalysisScript(AnalysisScript):
 
         maps = {}
         for name, variable in self.metadata.variables().items():
-            # Get the dataset out of the catalog.
-            args = self.metadata.catalog_search_args(variable)
-
-            datasets = catalog.search(
-                **self.metadata.catalog_search_args(variable)
-            ).to_dataset_dict(progressbar=False)
+            # Filter the catalog down to a single dataset for each variable.
+            query_params = {"variable_id": variable}
+            query_params.update(vars(self.metadata))
+            query_params.update(config)
+            datasets = catalog.search(**query_params).to_dataset_dict(progressbar=False)
+            if len(list(datasets.values())) != 1:
+                raise ValueError("could not filter the catalog down to a single dataset.")
             dataset = list(datasets.values())[0]
 
             if name.endswith("column"):
                 # Lon-lat maps.
-                maps[name] = LonLatMap.from_xarray_dataset(
-                    dataset,
-                    variable,
-                    time_method="annual mean",
-                    year=1980,
-                )
+                maps[name] = LonLatMap.from_xarray_dataset(dataset, variable, year=1980,
+                                                           time_method="annual mean")
             else:
-                maps[name] = ZonalMeanMap.from_xarray_dataset(
-                    dataset,
-                    variable,
-                    time_method="annual mean",
-                    year=1980,
-                    invert_y_axis=True,
-                )
+                maps[name] = ZonalMeanMap.from_xarray_dataset(dataset, variable, year=1980,
+                                                              time_method="annual mean",
+                                                              invert_y_axis=True)
 
         figure_paths = []
         for name in self.metadata.variables().keys():

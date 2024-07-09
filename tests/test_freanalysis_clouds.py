@@ -71,4 +71,4 @@ def test_freanalysis_clouds():
         chdir(Path(tmp))
         path = download_test_data(stem=tmp)
         json, csv = create_data_catalog(path)
-        plugin("data-catalog.json")
+        plugin(json)

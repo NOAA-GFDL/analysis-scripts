@@ -19,7 +19,7 @@ class Metadata:
            catalog variable ids change.
 
         Returns:
-            Dictionary mapping the names used in this scripts to the catalog
+            Dictionary mapping the names used in this script to the catalog
             variable ids.
         """
         return {
@@ -103,7 +103,7 @@ class CloudAnalysisScript(AnalysisScript):
             query_params.update(vars(self.metadata))
             query_params.update(config)
             datasets = catalog.search(**query_params).to_dataset_dict(progressbar=False)
-            if len(datasets) != 1:
+            if len(list(datasets.values())) != 1:
                 raise ValueError("could not filter the catalog down to a single dataset.")
             dataset = list(datasets.values())[0]
 
