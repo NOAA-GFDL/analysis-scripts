@@ -15,9 +15,9 @@ from xarray import open_dataset
 class Metadata:
     activity_id: str = "dev"
     institution_id: str = ""
-    source_id: str = ""
-    experiment_id: str = "c96L65_am5f4b4r1-newrad_amip"
-    frequency: str = "monthly"
+    source_id: str = "am5"
+    experiment_id: str = "c96L65_am5f7b11r0_amip"
+    frequency: str = "P1M"
     modeling_realm: str = "atmos"
     table_id: str = ""
     member_id: str = "na"
@@ -26,6 +26,7 @@ class Metadata:
     chunk_freq: str = ""
     platform: str = ""
     cell_methods: str = ""
+    chunk_freq: str = "P1Y"
 
     def catalog_search_args(self, name):
         return {
@@ -35,15 +36,6 @@ class Metadata:
             "modeling_realm": self.modeling_realm,
             "variable_id": name,
         }
-
-    def catalog_key(self, name) -> str:
-        return ".".join([
-            self.experiment_id,
-            self.frequency,
-            self.member_id,
-            self.modeling_realm,
-            name,
-        ])
 
     def variables(self):
         return {
@@ -257,22 +249,23 @@ class RadiationAnalysisScript(AnalysisScript):
             datasets = catalog.search(
                 **self.metadata.catalog_search_args(variable)
             ).to_dataset_dict(progressbar=False)
+            dataset = list(datasets.values())[0]
 
             # Lon-lat maps.
             maps[name] = LonLatMap.from_xarray_dataset(
-                datasets[self.metadata.catalog_key(variable)],
+                dataset,
                 variable,
                 time_method="annual mean",
-                year=2010,
+                year=1980,
             )
 
             if name == "rlut":
                 anomalies[name] = AnomalyTimeSeries.from_xarray_dataset(
-                    datasets[self.metadata.catalog_key(variable)],
+                    dataset,
                     variable,
                 )
                 timeseries[name] = GlobalMeanTimeSeries.from_xarray_dataset(
-                    datasets[self.metadata.catalog_key(variable)],
+                    dataset,
                     variable,
                 )
 

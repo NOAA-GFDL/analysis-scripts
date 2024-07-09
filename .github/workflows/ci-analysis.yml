@@ -1,4 +1,5 @@
-name: Python Package using Conda
+# Installs the Python dependencies and runs the freanalysis_clouds plugin.
+name: Test freanalysis_clouds plugin
 
 on: [push]
 
@@ -7,42 +8,30 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 5
-
+      matrix:
+        python-version: [3.9, 3.10, 3.11]
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python 3.10
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:
-        python-version: '3.10'
-    - name: Add conda to system path
+        python-version: ${{ matrix.python-version }}
+    - name: Add conda to the system path
       run: |
         # $CONDA is an environment variable pointing to the root of the miniconda directory
         echo $CONDA/bin >> $GITHUB_PATH
-    - name: Install intakebuilder 
+    - name: Install dependencies
       run: |
         conda config --add channels noaa-gfdl
         conda config --append channels conda-forge
         conda install intakebuilder -c noaa-gfdl
-    - name: Download sample cloud fields mid_cld_amt, low_cld_amt, high_cld_amt
+        python3 -m pip install --upgrade pip
+        cd analysis-scripts; pip install .; cd ..
+        cd figure_tools; pip install .; cd ..
+        cd freanalysis; pip install .; cd ..
+        cd freanalysis_clouds; pip install .; cd ..
+        pip install pytest
+    - name: Test freanalysis_clouds
       run: |
-           mkdir -p archive/oar.gfdl.mdtf/MDTF-examples/mdtf-time-slice-example/gfdl.ncrc5-deploy-prod-openmp/pp/atmos/ts/monthly/1yr/ && cd archive/oar.gfdl.mdtf/MDTF-examples/mdtf-time-slice-example/gfdl.ncrc5-deploy-prod-openmp/pp/atmos/ts/monthly/1yr/ && curl -O ftp://nomads.gfdl.noaa.gov/1/oar.gfdl.mdtf/MDTF-examples/GFDL-CM4/data/atmos/ts/monthly/1yr/atmos.198001-198012.high_cld_amt.nc && curl -O ftp://nomads.gfdl.noaa.gov/1/oar.gfdl.mdtf/MDTF-examples/GFDL-CM4/data/atmos/ts/monthly/1yr/atmos.198001-198012.low_cld_amt.nc && curl -O ftp://nomads.gfdl.noaa.gov/1/oar.gfdl.mdtf/MDTF-examples/GFDL-CM4/data/atmos/ts/monthly/1yr/atmos.198001-198012.mid_cld_amt.nc
-           ls /home/runner/work/analysis-scripts-fork/analysis-scripts-fork/archive/oar.gfdl.mdtf/MDTF-examples/mdtf-time-slice-example/gfdl.ncrc5-deploy-prod-openmp/pp/atmos/ts/monthly/1yr/
-   # - name: 'Generate catalog'
-   #   run: |
-   #     $CONDA/bin/python tests/mdtf_timeslice_catalog.py 
-    - name: 'Generate MDTF time-slice sample catalog with yaml'
-      run: |
-         $CONDA/bin/python tests/mdtf_timeslice_catalog.py
-    - name: upload-artifacts1
-      uses: actions/upload-artifact@v4
-      with:
-          name: workflow-artifacts1 
-          path: |
-            gfdl_analysis_citest.csv
-            gfdl_analysis_citest.json
-            gfdl_analysis_citest.csv
-            gfdl_analysis_citest.json
-    - name: Download all workflow run artifacts
-      uses: actions/download-artifact@v4
-    
-
+        python3 -m pytest tests
