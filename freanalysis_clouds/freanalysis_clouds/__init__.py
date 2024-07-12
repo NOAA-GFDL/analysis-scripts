@@ -5,47 +5,23 @@ from pathlib import Path
 from analysis_scripts import AnalysisScript
 from figure_tools import Figure, LonLatMap
 import intake
-import intake_esm
 
 
 @dataclass
 class Metadata:
-    activity_id: str = "dev"
-    institution_id: str = ""
-    source_id: str = ""
-    experiment_id: str = "c96L65_am5f7b11r0_amip"
-    frequency: str = "P1M"
-    modeling_realm: str = "atmos"
-    table_id: str = ""
-    member_id: str = "na"
-    grid_label: str = ""
-    temporal_subset: str = ""
-    chunk_freq: str = ""
-    platform: str = ""
-    cell_methods: str = ""
-    chunk_freq: str = "P1Y"
+    """Helper class that stores the metadata needed by the plugin."""
+    frequency: str = "monthly"
+    realm: str = "atmos"
 
-    def catalog_search_args(self, name):
-        return {
-            "experiment_id": self.experiment_id,
-            "frequency": self.frequency,
-            "member_id": self.member_id,
-            "modeling_realm": self.modeling_realm,
-            "variable_id": name,
-        }
+    @staticmethod
+    def variables():
+        """Helper function to make maintaining this script easier if the
+           catalog variable ids change.
 
-    def catalog_key(self, name) -> str:
-        return ".".join([
-            self.source_id,
-            self.experiment_id,
-            self.frequency,
-            self.member_id,
-            self.modeling_realm,
-            name,
-            self.chunk_freq
-        ])
-
-    def variables(self):
+        Returns:
+            Dictionary mapping the names used in this script to the catalog
+            variable ids.
+        """
         return {
             "high_cloud_fraction": "high_cld_amt",
             "low_cloud_fraction": "low_cld_amt",
@@ -53,8 +29,8 @@ class Metadata:
         }
 
 
-class AerosolAnalysisScript(AnalysisScript):
-    """Aerosol analysis script.
+class CloudAnalysisScript(AnalysisScript):
+    """Cloud analysis script.
 
     Attributes:
        description: Longer form description for the analysis.
@@ -99,41 +75,47 @@ class AerosolAnalysisScript(AnalysisScript):
             },
         })
 
-    def run_analysis(self, catalog, png_dir, reference_catalog=None):
+    def run_analysis(self, catalog, png_dir, reference_catalog=None, config={}):
         """Runs the analysis and generates all plots and associated datasets.
 
         Args:
             catalog: Path to a catalog.
             png_dir: Path to the directory where the figures will be made.
             reference_catalog: Path to a catalog of reference data.
+            config: Dictonary of catalog metadata.  Will overwrite the
+                    data defined in the Metadata helper class if they both
+                    contain the same keys.
 
         Returns:
             A list of paths to the figures that were created.
+
+        Raises:
+            ValueError if the catalog cannot be filtered correctly.
         """
 
-        # Connect to the catalog and find the necessary datasets.
+        # Connect to the catalog.
         catalog = intake.open_esm_datastore(catalog)
 
         maps = {}
         for name, variable in self.metadata.variables().items():
-            # Get the dataset out of the catalog.
-            args = self.metadata.catalog_search_args(variable)
+            # Filter the catalog down to a single dataset for each variable.
+            query_params = {"variable_id": variable}
+            query_params.update(vars(self.metadata))
+            query_params.update(config)
+            datasets = catalog.search(**query_params).to_dataset_dict(progressbar=False)
+            if len(list(datasets.values())) != 1:
+                raise ValueError("could not filter the catalog down to a single dataset.")
+            dataset = list(datasets.values())[0]
 
-            datasets = catalog.search(
-                **self.metadata.catalog_search_args(variable)
-            ).to_dataset_dict(progressbar=False)
+            # Create Lon-lat maps.
+            maps[name] = LonLatMap.from_xarray_dataset(dataset, variable, year=1980,
+                                                       time_method="annual mean")
 
-            # Lon-lat maps.
-            maps[name] = LonLatMap.from_xarray_dataset(
-                datasets[self.metadata.catalog_key(variable)],
-                variable,
-                time_method="annual mean",
-                year=1980,
-            )
-
+        # Create the figure.
         figure = Figure(num_rows=3, num_columns=1, title="Cloud Fraction", size=(16, 10))
         figure.add_map(maps["high_cloud_fraction"], "High Clouds", 1, colorbar_range= [0, 100])
         figure.add_map(maps["middle_cloud_fraction"], "Middle Clouds", 2, colorbar_range=[0, 100])
         figure.add_map(maps["low_cloud_fraction"], "Low Clouds", 3, colorbar_range=[0, 100])
-        figure.save(Path(png_dir) / "cloud-fraction.png")
-        return [Path(png_dir) / "cloud-fraction.png",]
+        output = Path(png_dir) / "cloud-fraction.png"
+        figure.save(output)
+        return [output,]
