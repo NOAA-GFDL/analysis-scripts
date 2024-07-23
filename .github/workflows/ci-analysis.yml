@@ -24,7 +24,7 @@ jobs:
         cd figure_tools; pip install .; cd ..
         cd freanalysis; pip install .; cd ..
         cd freanalysis_clouds; pip install .; cd ..
-        git clone https://github.com/aradhakrishnanGFDL/CatalogBuilder catalogbuilder
+        git clone https://github.com/noaa-gfdl/CatalogBuilder catalogbuilder
         cd catalogbuilder; pip install .; cd ..
         pip install pytest
     - name: Test freanalysis_clouds
