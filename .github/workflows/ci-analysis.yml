@@ -17,17 +17,21 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
+      
     - name: Install dependencies
       run: |
-        python3 -m pip install --upgrade pip
+        # $CONDA is an environment variable pointing to the root of the miniconda directory
+        echo $CONDA/bin >> $GITHUB_PATH
+        conda config --add channels noaa-gfdl
+        conda config --append channels conda-forge
+        conda install noaa-gfdl::catalogbuilder -n analysis-scripts
+        conda activate analysis-scripts
+        pip install --upgrade pip
         cd analysis-scripts; pip install .; cd ..
         cd figure_tools; pip install .; cd ..
         cd freanalysis; pip install .; cd ..
         cd freanalysis_clouds; pip install .; cd ..
-        conda config --add channels noaa-gfdl
-        conda config --append channels conda-forge
-        conda install noaa-gfdl::catalogbuilder
-        pip install pytest
+        
     - name: Test freanalysis_clouds
       run: |
-        python3 -m pytest tests
+        $CONDA/bin/python -m pytest tests
