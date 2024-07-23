@@ -26,11 +26,11 @@ jobs:
         conda config --append channels conda-forge
         conda install noaa-gfdl::catalogbuilder -n analysis-scripts
         conda activate analysis-scripts
-        pip install --upgrade pip
-        cd analysis-scripts; pip install .; cd ..
-        cd figure_tools; pip install .; cd ..
-        cd freanalysis; pip install .; cd ..
-        cd freanalysis_clouds; pip install .; cd ..
+        conda install pip
+        $CONDA/bin/python -m pip install /home/runner/work/analysis-scripts/analysis-scripts
+        $CONDA/bin/python -m pip install /home/runner/work/analysis-scripts/figure_tools
+        $CONDA/bin/python -m pip install /home/runner/work/analysis-scripts/freanalysis
+        $CONDA/bin/python -m pip install /home/runner/work/analysis-scripts/freanalysis_clouds
         
     - name: Test freanalysis_clouds
       run: |
