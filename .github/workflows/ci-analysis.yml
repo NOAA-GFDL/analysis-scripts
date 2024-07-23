@@ -24,8 +24,7 @@ jobs:
         cd figure_tools; pip install .; cd ..
         cd freanalysis; pip install .; cd ..
         cd freanalysis_clouds; pip install .; cd ..
-        git clone https://github.com/noaa-gfdl/CatalogBuilder catalogbuilder
-        cd catalogbuilder; pip install .; cd ..
+        conda install noaa-gfdl::catalogbuilder
         pip install pytest
     - name: Test freanalysis_clouds
       run: |
