@@ -24,6 +24,8 @@ jobs:
         cd figure_tools; pip install .; cd ..
         cd freanalysis; pip install .; cd ..
         cd freanalysis_clouds; pip install .; cd ..
+        conda config --add channels noaa-gfdl
+        conda config --append channels conda-forge
         conda install noaa-gfdl::catalogbuilder
         pip install pytest
     - name: Test freanalysis_clouds
