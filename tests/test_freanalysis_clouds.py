@@ -5,8 +5,8 @@ from subprocess import run
 from tempfile import TemporaryDirectory
 
 from freanalysis.plugins import list_plugins, plugin_requirements, run_plugin
-from scripts import gen_intake_gfdl
-
+import catalogbuilder
+from catalogbuilder.scripts import gen_intake_gfdl
 
 def download_test_data(stem):
     """Downloads test datasets from a FTP server.
