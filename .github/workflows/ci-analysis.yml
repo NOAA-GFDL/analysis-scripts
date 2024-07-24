@@ -28,10 +28,14 @@ jobs:
         conda install -n analysis-script-testing catalogbuilder -c noaa-gfdl
         #conda activate analysis-script-testing
         conda install pip
-        $CONDA/envs/analysis-script-testing/bin/python -m pip install /home/runner/work/analysis-scripts/analysis-scripts
-        $CONDA/envs/analysis-script-testing/bin/python -m pip install /home/runner/work/analysis-scripts/figure_tools
-        $CONDA/envs/analysis-script-testing/bin/python -m pip install /home/runner/work/analysis-scripts/freanalysis
-        $CONDA/envs/analysis-script-testing/bin/python -m pip install /home/runner/work/analysis-scripts/freanalysis_clouds
+        cd analysis-scripts
+        $CONDA/envs/analysis-script-testing/bin/python -m pip install .; cd ..
+        cd figure_tools
+        $CONDA/envs/analysis-script-testing/bin/python -m pip install .; cd ..
+        cd freanalysis
+        $CONDA/envs/analysis-script-testing/bin/python -m pip install .; cd ..
+        cd freanalysis_clouds
+        $CONDA/envs/analysis-script-testing/bin/python -m pip install .; cd ..
         
     - name: Test freanalysis_clouds
       run: |
