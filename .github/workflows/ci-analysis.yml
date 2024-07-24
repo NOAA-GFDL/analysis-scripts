@@ -39,4 +39,4 @@ jobs:
         
     - name: Test freanalysis_clouds
       run: |
-        $CONDA/bin/python -m pytest tests
+         $CONDA/envs/analysis-script-testing/bin/pytest tests
