@@ -47,7 +47,7 @@ def create_data_catalog(path, output="data-catalog"):
     yaml_path = Path(__file__).resolve().parent / "mdtf_timeslice_catalog.yaml"
 
     # Hack to stop click from exiting.
-    command = ["python3", "-m", "scripts.gen_intake_gfdl", str(path), output,
+    command = ["python", "-m", "gen_intake_gfdl", str(path), output,
                "--config", str(yaml_path)]
     run(command, check=True)
     return Path(f"{output}.json").resolve(), Path(f"{output}.csv").resolve()
