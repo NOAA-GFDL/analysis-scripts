@@ -26,12 +26,12 @@ jobs:
         conda config --append channels conda-forge
         conda create --name analysis-script-testing
         conda install -n analysis-script-testing catalogbuilder -c noaa-gfdl
-        conda activate analysis-script-testing
+        #conda activate analysis-script-testing
         conda install pip
-        $CONDA/bin/python -m pip install /home/runner/work/analysis-scripts/analysis-scripts
-        $CONDA/bin/python -m pip install /home/runner/work/analysis-scripts/figure_tools
-        $CONDA/bin/python -m pip install /home/runner/work/analysis-scripts/freanalysis
-        $CONDA/bin/python -m pip install /home/runner/work/analysis-scripts/freanalysis_clouds
+        $CONDA/envs/analysis-script-testing/bin/python -m pip install /home/runner/work/analysis-scripts/analysis-scripts
+        $CONDA/envs/analysis-script-testing/bin/python -m pip install /home/runner/work/analysis-scripts/figure_tools
+        $CONDA/envs/analysis-script-testing/bin/python -m pip install /home/runner/work/analysis-scripts/freanalysis
+        $CONDA/envs/analysis-script-testing/bin/python -m pip install /home/runner/work/analysis-scripts/freanalysis_clouds
         
     - name: Test freanalysis_clouds
       run: |
