@@ -48,7 +48,7 @@ def create_data_catalog(path, output="data-catalog"):
 
     # Hack to stop click from exiting.
     # we have to move create catalog as its own pytest in the conda environment perhaps
-    command = ["$CONDA/envs/analysis-script-testing/bin/python", "-m", "gen_intake_gfdl", str(path), output,
+    command = ["/usr/share/miniconda/envs/analysis-script-testing/bin/python", "-m", "gen_intake_gfdl", str(path), output,
                "--config", str(yaml_path)]
     run(command, check=True)
     return Path(f"{output}.json").resolve(), Path(f"{output}.csv").resolve()
