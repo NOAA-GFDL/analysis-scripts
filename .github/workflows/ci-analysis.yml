@@ -24,8 +24,9 @@ jobs:
         echo $CONDA/bin >> $GITHUB_PATH
         conda config --add channels noaa-gfdl
         conda config --append channels conda-forge
-        conda install noaa-gfdl::catalogbuilder -n analysis-scripts
-        conda activate analysis-scripts
+        conda create --name analysis-script-testing
+        conda install -n analysis-script-testing catalogbuilder -c noaa-gfdl
+        conda activate analysis-script-testing
         conda install pip
         $CONDA/bin/python -m pip install /home/runner/work/analysis-scripts/analysis-scripts
         $CONDA/bin/python -m pip install /home/runner/work/analysis-scripts/figure_tools
