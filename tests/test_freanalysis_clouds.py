@@ -47,8 +47,8 @@ def create_data_catalog(path, output="data-catalog"):
     yaml_path = Path(__file__).resolve().parent / "mdtf_timeslice_catalog.yaml"
 
     # Hack to stop click from exiting.
-    # we have to move create catalog as its own pytest in the conda environment perhaps
-    command = ["/usr/share/miniconda/envs/analysis-script-testing/bin/python", "-m", "gen_intake_gfdl", str(path), output,
+    # TODO we have to move create catalog as its own pytest in the conda environment perhaps, and avoid this hardcoding
+    command = ["/usr/share/miniconda/envs/analysis-script-testing/bin/python", "-m", "catalogbuilder.scripts.gen_intake_gfdl", str(path), output,
                "--config", str(yaml_path)]
     run(command, check=True)
     return Path(f"{output}.json").resolve(), Path(f"{output}.csv").resolve()
