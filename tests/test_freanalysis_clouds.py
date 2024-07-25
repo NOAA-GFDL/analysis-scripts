@@ -71,5 +71,6 @@ def test_freanalysis_clouds():
     with TemporaryDirectory() as tmp:
         chdir(Path(tmp))
         path = download_test_data(stem=tmp)
-        json, csv = create_data_catalog(path)
+        yaml = Path(__file__).resolve().parent / "mdtf_timeslice_catalog.yaml"
+        json, csv = create_catalog(path,yaml)
         plugin(json)
