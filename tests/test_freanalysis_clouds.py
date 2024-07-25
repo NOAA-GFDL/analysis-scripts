@@ -75,4 +75,5 @@ def test_freanalysis_clouds():
         yaml = Path(__file__).resolve().parent / "mdtf_timeslice_catalog.yaml"
         outputpath = "/home/runner/work/analysis-scripts-fork/data-catalog"
         json, csv = create_catalog.create_catalog(path,yaml,outputpath)
+        print(json,csv)
         plugin(json)
