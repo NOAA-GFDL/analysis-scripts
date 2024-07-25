@@ -5,8 +5,8 @@ from subprocess import run
 from tempfile import TemporaryDirectory
 
 from freanalysis.plugins import list_plugins, plugin_requirements, run_plugin
-from scripts import gen_intake_gfdl
-
+import catalogbuilder
+from catalogbuilder.scripts import gen_intake_gfdl
 
 def download_test_data(stem):
     """Downloads test datasets from a FTP server.
@@ -47,7 +47,8 @@ def create_data_catalog(path, output="data-catalog"):
     yaml_path = Path(__file__).resolve().parent / "mdtf_timeslice_catalog.yaml"
 
     # Hack to stop click from exiting.
-    command = ["python3", "-m", "scripts.gen_intake_gfdl", str(path), output,
+    # TODO we have to move create catalog as its own pytest in the conda environment perhaps, and avoid this hardcoding
+    command = ["/usr/share/miniconda/envs/analysis-script-testing/bin/python", "-m", "catalogbuilder.scripts.gen_intake_gfdl", str(path), output,
                "--config", str(yaml_path)]
     run(command, check=True)
     return Path(f"{output}.json").resolve(), Path(f"{output}.csv").resolve()
