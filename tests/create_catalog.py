@@ -19,4 +19,5 @@ def create_catalog(path, yaml, output="/home/runner/work/analysis-scripts-fork/d
     sys.argv = ['str(path)','--config', yaml_path]
     print(sys.argv)
     gen_intake_gfdl.main()
+    print("test")
     return Path(f"{output}.json").resolve(), Path(f"{output}.csv").resolve()
