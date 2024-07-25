@@ -7,6 +7,7 @@ from tempfile import TemporaryDirectory
 from freanalysis.plugins import list_plugins, plugin_requirements, run_plugin
 import catalogbuilder
 from catalogbuilder.scripts import gen_intake_gfdl
+import create_catalog
 
 def download_test_data(stem):
     """Downloads test datasets from a FTP server.
@@ -72,5 +73,5 @@ def test_freanalysis_clouds():
         chdir(Path(tmp))
         path = download_test_data(stem=tmp)
         yaml = Path(__file__).resolve().parent / "mdtf_timeslice_catalog.yaml"
-        json, csv = create_catalog(path,yaml)
+        json, csv = create_catalog.create_catalog(path,yaml)
         plugin(json)
