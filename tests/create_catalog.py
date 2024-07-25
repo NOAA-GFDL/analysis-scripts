@@ -2,7 +2,7 @@ from pathlib import Path
 from catalogbuilder.scripts import gen_intake_gfdl
 import sys
 
-def create_catalog(path, yaml, output="data-catalog"):
+def create_catalog(path, yaml, output="/home/runner/work/analysis-scripts-fork/data-catalog"):
     """Creates a data catalog from a config file
 
     Args:
