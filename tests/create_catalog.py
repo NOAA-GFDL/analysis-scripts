@@ -1,3 +1,4 @@
+from pathlib import Path
 from catalogbuilder.scripts import gen_intake_gfdl
 import sys
 
