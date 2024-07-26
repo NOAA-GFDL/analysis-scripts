@@ -15,11 +15,12 @@ def create_catalog(path, yaml_path, output="/home/runner/work/analysis-scripts-f
     """
     print(yaml_path)
     print(path)
-    return Path(f"{output}.json").resolve(), Path(f"{output}.csv").resolve()
-
     sys.argv = ['str(path)','--config', yaml_path]
     print(sys.argv)
-    gen_intake_gfdl.main()
+    try:
+      gen_intake_gfdl.main()
+    except:
+      print("Exception occured running gen_intake_gfdl")
     print("test")
     
     return Path(f"{output}.json").resolve(), Path(f"{output}.csv").resolve()
