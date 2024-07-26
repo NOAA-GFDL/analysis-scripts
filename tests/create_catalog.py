@@ -15,7 +15,7 @@ def create_catalog(path, yaml_path, output="/home/runner/work/analysis-scripts-f
     """
     print(yaml_path)
     print(path)
-    sys.argv = [str(path),'--config', yaml_path]
+    sys.argv = [str(path),output,'--config', yaml_path]
     print(sys.argv)
     try:
       gen_intake_gfdl.main()
