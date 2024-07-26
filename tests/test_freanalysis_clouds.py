@@ -3,6 +3,7 @@ from os import chdir, environ
 from pathlib import Path
 from subprocess import run
 from tempfile import TemporaryDirectory
+import sys
 
 from freanalysis.plugins import list_plugins, plugin_requirements, run_plugin
 import catalogbuilder
@@ -74,6 +75,9 @@ def test_freanalysis_clouds():
         path = download_test_data(stem=tmp)
         yaml = Path(__file__).resolve().parent / "mdtf_timeslice_catalog.yaml"
         outputpath = "/home/runner/work/analysis-scripts-fork/data-catalog"
-        json, csv = create_catalog.create_catalog(path,yaml,outputpath)
+        try:
+          json, csv = create_catalog.create_catalog(path,yaml,outputpath)
+        except:
+          sys.exit("error running create_catalog")
         print(json,csv)
         plugin(json)
