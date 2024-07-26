@@ -1,6 +1,8 @@
 from pathlib import Path
 from catalogbuilder.scripts import gen_intake_gfdl
 import sys
+from subprocess import run
+
 
 def create_catalog(path, yaml_path, output="/home/runner/work/analysis-scripts-fork/data-catalog"):
     """Creates a data catalog from a config file
@@ -16,9 +18,9 @@ def create_catalog(path, yaml_path, output="/home/runner/work/analysis-scripts-f
     print(yaml_path)
     print(path)
     #sys.argv = [str(path),output,'--config', str(yaml_path)]
-    print(sys.argv)
     command = ["/usr/share/miniconda/envs/analysis-script-testing/bin/python", "-m", "catalogbuilder.scripts.gen_intake_gfdl", str(path), output,
                "--config", str(yaml_path)]
+    print(command)
     try:
         run(command, check=True)
      # gen_intake_gfdl.main()
