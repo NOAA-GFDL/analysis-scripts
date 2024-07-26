@@ -37,6 +37,14 @@ jobs:
         cd freanalysis_clouds
         $CONDA/envs/analysis-script-testing/bin/python -m pip install .; cd ..
         
-    - name: Test freanalysis_clouds
+    - name: Generate catalog and run freanalysis_clouds
       run: |
          $CONDA/envs/analysis-script-testing/bin/pytest tests
+    - name: upload-artifacts
+      uses: actions/upload-artifact@v4
+      with:
+          name: workflow-artifacts1 
+          path: |
+            /home/runner/work/analysis-scripts-fork/data-catalog.json
+            /home/runner/work/analysis-scripts-fork/data-catalog.csv
+
