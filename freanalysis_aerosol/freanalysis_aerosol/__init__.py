@@ -11,7 +11,7 @@ import intake
 @dataclass
 class Metadata:
     """Helper class that stores the metadata needed by the plugin."""
-    frequency: str = "monthly"
+    frequency: str = "monthly"object
     realm: str = "atmos"
 
     @staticmethod
@@ -207,3 +207,4 @@ class AerosolAnalysisScript(AnalysisScript):
             figure.save(Path(png_dir) / f"{name}.png")
             figure_paths.append(Path(png_dir)/ f"{name}.png")
         return figure_paths
+object
