@@ -11,8 +11,8 @@ import xarray as xr
 
 
 class LandAnalysisScript(AnalysisScript):
-    """Abstract base class for analysis scripts.  User-defined analysis scripts
-       should inhert from this class and override the requires and run_analysis methods.
+    """A class for performing various analysis tasks relating to GFDL land model output,
+       inherits from the AnalysisScipt base class.
 
     Attributes:
        description: Longer form description for the analysis.
@@ -78,7 +78,7 @@ class LandAnalysisScript(AnalysisScript):
         lon = dataset.lon
         lat = dataset.lat
 
-        if plt_time == None: plt_time=len(dates)-1
+        if plt_time is None: plt_time=len(dates)-1
 
         data = dataset[var][plt_time].values
         projection = ccrs.PlateCarree()
@@ -157,7 +157,7 @@ class LandAnalysisScript(AnalysisScript):
         calculates the monthly and annual means of the specified variable and plots the seasonal and annual means.
         
         '''
-        if var_range != None:
+        if var_range is not None:
             data_filtered = dataset.where((dataset[var] > var_range[0]) & (dataset[var] <= var_range[1]) &
                                         (dataset.lat >= minlat) & (dataset.lon >= minlon) &
                                         (dataset.lat <= maxlat) & (dataset.lon <= maxlon))
@@ -171,7 +171,7 @@ class LandAnalysisScript(AnalysisScript):
         data_df['monthly_mean'] = data_filtered.resample(time='YE').mean(dim=['lat','lon'],skipna=True)[var].values
         data_df['monthly_shift'] = data_df['monthly_mean'].shift(1)
 
-        if timerange != None:
+        if timerange is not None:
             ys, ye = (str(timerange[0]),str(timerange[1]))
             plot_df = data_df.loc[f'{ys}-1-1':f'{ye}-1-1']
         else:
