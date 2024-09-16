@@ -1,0 +1,35 @@
+[build-system]
+requires = [
+    "setuptools >= 40.9.0",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "freanalysis_land"
+version = "0.1"
+dependencies = [
+    "setuptools",
+    "intake",
+    "intake-esm",
+    "xarray",
+    "matplotlib",
+    "cartopy",
+    "pandas",
+    "xarray"
+
+]
+requires-python = ">= 3.6"
+authors = [
+    {name = "developers"},
+]
+maintainers = [
+    {name = "Anthony Preucil", email = "Anthony.Preucil@noaa.gov"},
+]
+description = "Land Analysis for GFDL stand-alone model"
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python"
+]
+
+[project.urls]
+repository = "https://github.com/NOAA-GFDL/analysis-scripts.git"
