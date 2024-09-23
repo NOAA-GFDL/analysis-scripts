@@ -8,7 +8,6 @@ import sys
 from freanalysis.plugins import list_plugins, plugin_requirements, run_plugin
 import catalogbuilder
 from catalogbuilder.scripts import gen_intake_gfdl
-import create_catalog
 
 def download_test_data(stem):
     """Downloads test datasets from a FTP server.
@@ -76,7 +75,8 @@ def test_freanalysis_clouds():
         yaml = Path(__file__).resolve().parent / "mdtf_timeslice_catalog.yaml"
         outputpath = "/home/runner/work/analysis-scripts-fork/data-catalog"
         try:
-          json, csv = create_catalog.create_catalog(path,yaml,outputpath)
+          csv, json = gen_intake_gfdl.create_catalog(path,config=configyaml,outputpath)
+          #json, csv = create_catalog.create_catalog(path,yaml,outputpath)
         except:
           sys.exit("error running create_catalog")
         print(json,csv)
