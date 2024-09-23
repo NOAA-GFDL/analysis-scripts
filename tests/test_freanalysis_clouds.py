@@ -34,7 +34,7 @@ def download_test_data(stem):
             ftp.retrbinary(f"RETR {name}", open(data_directory / name, "wb").write)
     return catalog_root.resolve()
 
-
+'''
 def create_data_catalog(path, output="data-catalog"):
     """Creates a data catalog from a directory tree.
 
@@ -53,7 +53,7 @@ def create_data_catalog(path, output="data-catalog"):
                "--config", str(yaml_path)]
     run(command, check=True)
     return Path(f"{output}.json").resolve(), Path(f"{output}.csv").resolve()
-
+'''
 
 def plugin(json, pngs_directory="pngs"):
     """Run the plugin to create the figure.
@@ -75,7 +75,7 @@ def test_freanalysis_clouds():
         yaml = Path(__file__).resolve().parent / "mdtf_timeslice_catalog.yaml"
         outputpath = "/home/runner/work/analysis-scripts-fork/data-catalog"
         try:
-          csv, json = gen_intake_gfdl.create_catalog(path,config=configyaml,outputpath)
+          csv, json = gen_intake_gfdl.create_catalog(input_path=path,output_path=outputpath,config=configyaml)
           #json, csv = create_catalog.create_catalog(path,yaml,outputpath)
         except:
           sys.exit("error running create_catalog")
