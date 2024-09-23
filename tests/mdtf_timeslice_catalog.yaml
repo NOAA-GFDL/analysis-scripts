@@ -2,6 +2,7 @@
 # The headerlist is expected column names in your catalog/csv file. This is usually
 # determined by the users in conjuction with the ESM collection specification standards
 # and the appropriate workflows.
+schema: "",
 headerlist: ["activity_id", "institution_id", "source_id", "experiment_id",
              "frequency", "modeling_realm", "table_id",
              "member_id", "grid_label", "variable_id",
@@ -13,3 +14,4 @@ output_path_template: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA',
                        'modeling_realm', 'cell_methods', 'frequency', 'chunk_freq']
 
 output_file_template: ['modeling_realm', 'temporal_subset', 'variable_id']
+
