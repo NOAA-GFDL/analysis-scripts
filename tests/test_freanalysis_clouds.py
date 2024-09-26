@@ -74,10 +74,10 @@ def test_freanalysis_clouds():
         path = download_test_data(stem=tmp)
         yaml = Path(__file__).resolve().parent / "mdtf_timeslice_catalog.yaml"
         outputpath = "/home/runner/work/analysis-scripts-fork/data-catalog"
-        try:
-          csv, json = gen_intake_gfdl.create_catalog(input_path=path,output_path=outputpath,config=str(yaml))
+        
+        csv, json = gen_intake_gfdl.create_catalog(input_path=path,output_path=outputpath,config=str(yaml))
           #json, csv = create_catalog.create_catalog(path,yaml,outputpath)
-        except:
-          sys.exit("error running create_catalog")
+       # except:
+       #   sys.exit("error running create_catalog")
         print(json,csv)
         plugin(json)
