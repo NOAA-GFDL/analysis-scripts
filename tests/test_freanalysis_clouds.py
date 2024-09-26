@@ -34,27 +34,6 @@ def download_test_data(stem):
             ftp.retrbinary(f"RETR {name}", open(data_directory / name, "wb").write)
     return catalog_root.resolve()
 
-'''
-def create_data_catalog(path, output="data-catalog"):
-    """Creates a data catalog from a directory tree.
-
-    Args:
-        path: Path to the catalog root.
-        output: Name of the data catalog that will be created.
-
-    Returns:
-        Paths to the data catalog json and csv files.
-    """
-    yaml_path = Path(__file__).resolve().parent / "mdtf_timeslice_catalog.yaml"
-
-    # Hack to stop click from exiting.
-    # TODO we have to move create catalog as its own pytest in the conda environment perhaps, and avoid this hardcoding
-    command = ["/usr/share/miniconda/envs/analysis-script-testing/bin/python", "-m", "catalogbuilder.scripts.gen_intake_gfdl", str(path), output,
-               "--config", str(yaml_path)]
-    run(command, check=True)
-    return Path(f"{output}.json").resolve(), Path(f"{output}.csv").resolve()
-'''
-
 def plugin(json, pngs_directory="pngs"):
     """Run the plugin to create the figure.
 
@@ -73,7 +52,8 @@ def test_freanalysis_clouds():
         chdir(Path(tmp))
         path = download_test_data(stem=tmp)
         yaml = Path(__file__).resolve().parent / "mdtf_timeslice_catalog.yaml"
-        outputpath = "/home/runner/work/analysis-scripts-fork/data-catalog"        
+        outputpath = "/home/runner/work/analysis-scripts-fork/data-catalog"      
+        #Creates data catalog using the scripts in catalogbuilder
         csv, json = gen_intake_gfdl.create_catalog(input_path=str(path),output_path=outputpath,config=str(yaml))
         print(json,csv)
         plugin(json)
