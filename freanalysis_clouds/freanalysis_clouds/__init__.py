@@ -104,7 +104,7 @@ class CloudAnalysisScript(AnalysisScript):
             query_params.update(config)
             datasets = catalog.search(**query_params).to_dataset_dict(progressbar=False)
             if len(list(datasets.values())) != 1:
-                raise ValueError("could not filter the catalog down to a single dataset.")
+                raise ValueError("could not filter the catalog down to a single dataset.", datasets)
             dataset = list(datasets.values())[0]
 
             # Create Lon-lat maps.
