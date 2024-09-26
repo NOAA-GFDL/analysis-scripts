@@ -10,7 +10,7 @@ import intake
 @dataclass
 class Metadata:
     """Helper class that stores the metadata needed by the plugin."""
-    frequency: str = "monthly"
+    frequency: str = "mon"
     realm: str = "atmos"
 
     @staticmethod
@@ -95,6 +95,7 @@ class CloudAnalysisScript(AnalysisScript):
 
         # Connect to the catalog.
         catalog = intake.open_esm_datastore(catalog)
+        print(catalog)
 
         maps = {}
         for name, variable in self.metadata.variables().items():
