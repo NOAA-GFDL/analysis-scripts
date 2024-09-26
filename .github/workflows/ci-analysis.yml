@@ -45,8 +45,8 @@ jobs:
       with:
           name: workflow-artifacts1 
           path: |
-            data-catalog.json
-            data-catalog.csv
+            ${{ runner.temp }}/data-catalog.json
+            ${{ runner.temp }}/data-catalog.csv
     - name: Run freanalysis_land
       run: |
          $CONDA/envs/analysis-script-testing/bin/pytest tests/test_freanalysis_land
