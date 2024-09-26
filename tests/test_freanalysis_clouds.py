@@ -52,7 +52,7 @@ def test_freanalysis_clouds():
         chdir(Path(tmp))
         path = download_test_data(stem=tmp)
         yaml = Path(__file__).resolve().parent / "mdtf_timeslice_catalog.yaml"
-        outputpath = "/home/runner/work/analysis-scripts-fork/data-catalog"      
+        outputpath = "data-catalog"      
         #Creates data catalog using the scripts in catalogbuilder
         csv, json = gen_intake_gfdl.create_catalog(input_path=str(path),output_path=outputpath,config=str(yaml))
         print(json,csv)
