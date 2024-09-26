@@ -1,6 +1,6 @@
 
 
-from freanalysis_land.freanalysis_land.land import LandAnalysisScript
+from freanalysis_land.land import LandAnalysisScript
 
 def test_land_analysis_script():
     land = LandAnalysisScript()
