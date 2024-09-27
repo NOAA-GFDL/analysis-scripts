@@ -39,14 +39,14 @@ jobs:
         
     - name: Generate catalog and run freanalysis_clouds
       run: |
-         $CONDA/envs/analysis-script-testing/bin/pytest tests/test_freanalysis_clouds.py
+         $CONDA/envs/analysis-script-testing/bin/pytest --capture=tee-sys tests/test_freanalysis_clouds.py
     - name: upload-artifacts
       uses: actions/upload-artifact@v4
       with:
           name: workflow-artifacts1 
           path: |
-            data-catalog.json
-            data-catalog.csv
+            ${{ github.workspace }}/tests/data-catalog.json
+            ${{ github.workspace }}/tests/data-catalog.csv
     - name: Run freanalysis_land
       run: |
          $CONDA/envs/analysis-script-testing/bin/pytest tests/test_freanalysis_land
