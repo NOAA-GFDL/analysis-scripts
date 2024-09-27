@@ -48,11 +48,12 @@ def plugin(json, pngs_directory="pngs"):
 
 
 def test_freanalysis_clouds():
-    outputpath = "data-catalog" 
+    
     with TemporaryDirectory() as tmp:
         chdir(Path(tmp))
         path = download_test_data(stem=tmp)
         yaml = Path(__file__).resolve().parent / "mdtf_timeslice_catalog.yaml"
+        outputpath = Path(__file__).resolve().parent / "data-catalog" 
         #Creates data catalog using the scripts in catalogbuilder
         csv, json = gen_intake_gfdl.create_catalog(input_path=str(path),output_path=outputpath,config=str(yaml))
         print(json,csv)
