@@ -3,13 +3,14 @@
 # determined by the users in conjuction with the ESM collection specification standards
 # and the appropriate workflows.
 headerlist: ["activity_id", "institution_id", "source_id", "experiment_id",
-             "frequency", "modeling_realm", "table_id",
+             "frequency", "realm", "table_id",
              "member_id", "grid_label", "variable_id",
-             "temporal_subset", "chunk_freq", "grid_label", "platform",
-             "dimensions", "cell_methods", "path"]
+             "time_range", "chunk_freq", "grid_label", "platform",
+             "dimensions", "cell_methods", "standard_name","path"]
 
 output_path_template: ['NA', 'NA', 'NA', 'NA', 'NA', 'NA', 'NA',
                        'source_id', 'experiment_id', 'NA', 'platform', 'custom_pp',
-                       'modeling_realm', 'cell_methods', 'frequency', 'chunk_freq']
+                       'realm', 'cell_methods', 'frequency', 'chunk_freq']
 
-output_file_template: ['modeling_realm', 'temporal_subset', 'variable_id']
+output_file_template: ['realm', 'time_range', 'variable_id']
+

@@ -10,7 +10,7 @@ import intake
 @dataclass
 class Metadata:
     """Helper class that stores the metadata needed by the plugin."""
-    frequency: str = "monthly"
+    frequency: str = "mon"
     realm: str = "atmos"
 
     @staticmethod
@@ -95,6 +95,7 @@ class CloudAnalysisScript(AnalysisScript):
 
         # Connect to the catalog.
         catalog = intake.open_esm_datastore(catalog)
+        print(catalog)
 
         maps = {}
         for name, variable in self.metadata.variables().items():
@@ -104,7 +105,7 @@ class CloudAnalysisScript(AnalysisScript):
             query_params.update(config)
             datasets = catalog.search(**query_params).to_dataset_dict(progressbar=False)
             if len(list(datasets.values())) != 1:
-                raise ValueError("could not filter the catalog down to a single dataset.")
+                raise ValueError("could not filter the catalog down to a single dataset.", datasets)
             dataset = list(datasets.values())[0]
 
             # Create Lon-lat maps.
