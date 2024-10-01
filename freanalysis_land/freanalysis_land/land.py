@@ -1,3 +1,4 @@
+import os
 import json
 from analysis_scripts import AnalysisScript
 import intake
@@ -32,7 +33,7 @@ class LandAnalysisScript(AnalysisScript):
         raise NotImplementedError("you must override this function.")
         return json.dumps("{json of metadata MDTF format.}")
     
-    def global_map(self,dataset,var,dates,plt_time=None,colormap='viridis',title=''):
+    def global_map(self,dataset,var,plt_time=None,colormap='viridis',title=''):
         """
         Generate a global map and regional subplots for a specified variable from an xarray dataset.
 
@@ -77,6 +78,7 @@ class LandAnalysisScript(AnalysisScript):
         """
         lon = dataset.lon
         lat = dataset.lat
+        dates = dataset['time'];
 
         if plt_time is None: plt_time=len(dates)-1
 
@@ -118,7 +120,7 @@ class LandAnalysisScript(AnalysisScript):
         # plt.savefig(var+'_global_map.png')
         # plt.close()
 
-    def timeseries(self, dataset,var,dates_period,var_range=None,minlon = 0,maxlon = 360,minlat = -90,maxlat=90,timerange=None,title=''):
+    def timeseries(self, dataset,var,var_range=None,minlon = 0,maxlon = 360,minlat = -90,maxlat=90,timerange=None,title=''):
         '''
         Generate a time series plot of the specified variable from a dataset within a given geographic and temporal range.
 
@@ -165,6 +167,7 @@ class LandAnalysisScript(AnalysisScript):
             data_filtered = dataset.where((dataset[var] > 0) &
                                         (dataset.lat >= minlat) & (dataset.lon >= minlon) &
                                         (dataset.lat <= maxlat) & (dataset.lon <= maxlon))
+        dates_period = dataset['time']
         data_filtered['time'] = dates_period
 
         data_df = pd.DataFrame(index = dates_period)
@@ -197,47 +200,39 @@ class LandAnalysisScript(AnalysisScript):
             A list of png figures.
         """
         print ('WARNING: THESE FIGURES ARE FOR TESTING THE NEW ANALYSIS WORKFLOW ONLY AND SHOULD NOT BE USED IN ANY OFFICIAL MANNER FOR ANALYSIS OF LAND MODEL OUTPUT.')
-        col = intake.open_esm_datastore(catalog)
-        df = col.df
+        catalog = intake.open_esm_datastore(catalog)
+        success = False
 
         # Soil Carbon
         var = 'cSoil'
         print ('Soil Carbon Analysis')
-        cat = col.search(variable_id=var,realm='land_cmip')
-        other_dict = cat.to_dataset_dict(cdf_kwargs={'chunks':{'time':12},'decode_times':False})
-        combined_dataset = xr.concat(list(dict(sorted(other_dict.items())).values()), dim='time')
-
-        # Other data:
-        # land_static_file = re.search('land_static:\s([\w.]*)',combined_dataset.associated_files).group(1)
-        # STATIC FILES SHOULD BE PART OF THE CATALOG FOR EASY ACCESS
-
-        # Select Data and plot
-        dates = [datetime.date(1,1,1) + datetime.timedelta(d) for d in combined_dataset['time'].values] # Needs to be made dynamic
-        dates_period = pd.PeriodIndex(dates,freq='D')
-
-        sm_fig = self.global_map(combined_dataset,var,dates,title='Soil Carbon Content (kg/m^2)')
-        plt.savefig(png_dir+var+'_global_map.png')
-        plt.close()
-
-        ts_fig = self.timeseries(combined_dataset,var,dates_period,title='Global Average Soil Carbon')
-        plt.savefig(png_dir+var+'_global_ts.png')
-        plt.close()
+        datasets = catalog.search(variable_id=var).to_dataset_dict()
+        if len(list(datasets.values())) == 1:
+            dataset = list(datasets.values())[0]
+            self.global_map(dataset,var,title='Soil Carbon Content (kg/m^2)')
+            plt.savefig(os.path.join(png_dir, var + '_global_map.png'))
+            plt.close()
+            ts_fig = self.timeseries(dataset,var,title='Global Average Soil Carbon')
+            plt.savefig(os.path.join(png_dir, var+'_global_ts.png'))
+            plt.close()
+            success = True
+        else:
+            print("Could not filter the catalog down to a single dataset; got", len(list(datasets.values())))
 
         # Soil Moisture
         var = 'mrso'
         print ('Soil Moisture Analysis')
-        cat = col.search(variable_id=var,realm='land_cmip')
-        other_dict = cat.to_dataset_dict(cdf_kwargs={'chunks':{'time':12},'decode_times':False})
-        combined_dataset = xr.concat(list(dict(sorted(other_dict.items())).values()), dim='time')
+        datasets = catalog.search(variable_id=var).to_dataset_dict()
+        if len(list(datasets.values())) == 1:
+            dataset = list(datasets.values())[0]
+            self.global_map(dataset,var,title='Soil Moisture (kg/m^2)')
+            plt.savefig(os.path.join(png_dir, var + '_global_map.png'))
+            plt.close()
+            success = True
+        else:
+            print("Could not filter the catalog down to a single dataset; got", len(list(datasets.values())))
 
-        # Other data:
-        # soil_area_file = re.search('soil_area:\s([\w.]*)',combined_dataset.associated_files).group(1)
-        # STATIC FILES SHOULD BE PART OF THE CATALOG FOR EASY ACCESS
-
-        # Select Data and plot
-        dates = [datetime.date(1,1,1) + datetime.timedelta(d) for d in combined_dataset['time'].values] # Needs to be made dynamic
-        dates_period = pd.PeriodIndex(dates,freq='D')
-
-        sm_fig = self.global_map(combined_dataset,var,dates,title='Soil Moisture (kg/m^2)')
-        plt.savefig(png_dir+var+'_global_map.png')
-        plt.close()
+        if success:
+            pass
+        else:
+            raise Exception("Did not produce any plots")
