@@ -14,9 +14,21 @@ The only software packages that are required are:
 - numpy
 - xarray
 
-### How to
-Maps, heatmaps, and line plots can be made from the provided objects.  These objects
-can be instantiated directly from `xarray` datasets.  For example:
+### How to install this package
+For now I'd recommend creating and installing this package in a virtual enviroment:
+
+```bash
+$ python3 -m venv env
+$ source env/bin/activate
+$ pip install --upgrade pip
+$ git clone https://github.com/NOAA-GFDL/analysis-scripts
+$ cd analysis/scripts/figure_tools
+$ pip install .
+```
+
+### Creating plots
+Longitude-latitude maps, heatmaps, and line plots can be made from the provided
+objects.  These objects can be instantiated directly from `xarray` datasets.  For example:
 
 ```python3
 # Longitude-latitude map.
