@@ -21,8 +21,8 @@ For now I'd recommend creating and installing this package in a virtual envirome
 $ python3 -m venv env
 $ source env/bin/activate
 $ pip install --upgrade pip
-$ git clone https://github.com/NOAA-GFDL/analysis-scripts
-$ cd analysis/scripts/figure_tools
+$ git clone https://github.com/NOAA-GFDL/analysis-scripts.git
+$ cd analysis-scripts/figure_tools
 $ pip install .
 ```
 
