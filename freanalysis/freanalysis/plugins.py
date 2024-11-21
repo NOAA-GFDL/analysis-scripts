@@ -58,16 +58,17 @@ def plugin_requirements(name):
     return _plugin_object(name).requires()
 
 
-def run_plugin(name, catalog, png_dir, reference_catalog=None):
+def run_plugin(name, catalog, png_dir, config=None, reference_catalog=None):
     """Runs the plugin's analysis.
 
     Args:
         name: Name of the plugin.
         catalog: Path to the data catalog.
         png_dir: Directory where the output figures will be stored.
+        config: Dictionary of configuration values.
         catalog: Path to the catalog of reference data.
 
     Returns:
         A list of png figure files that were created by the analysis.
     """
-    return _plugin_object(name).run_analysis(catalog, png_dir, reference_catalog)
+    return _plugin_object(name).run_analysis(catalog, png_dir, config, reference_catalog)

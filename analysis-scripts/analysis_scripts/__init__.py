@@ -24,12 +24,13 @@ class AnalysisScript(object):
         raise NotImplementedError("you must override this function.")
         return json.dumps("{json of metadata MDTF format.}")
 
-    def run_analysis(self, catalog, png_dir, reference_catalog=None):
+    def run_analysis(self, catalog, png_dir, config=None, reference_catalog=None):
         """Runs the analysis and generates all plots and associated datasets.
 
         Args:
             catalog: Path to a model output catalog.
             png_dir: Directory to store output png figures in.
+            config: Dictionary of configuration options.
             reference_catalog: Path to a catalog of reference data.
 
         Returns:

@@ -2,7 +2,7 @@
 Package that can run GFDL model analysis plugins.
 
 ### Motivation
-This crates a simple way for FRE to discover and run user generated analysis packages
+This creates a simple way for FRE to discover and run user generated analysis packages
 to create figures to analyze the GFDL models.
 
 ### Requirements
@@ -36,5 +36,5 @@ for name in plugins:
 # Run the plugins.  You need to pass in a path to a data catalog, and a directory where
 # you want the figures to be created.
 for name in plugins:
-    figures = run_plugin(name, catalog, png_dir, reference_catalog=None)
+    figures = run_plugin(name, catalog, png_dir, config=None, reference_catalog=None)
 ```
