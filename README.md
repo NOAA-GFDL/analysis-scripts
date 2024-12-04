@@ -96,19 +96,17 @@ In order to run a custom analysis script, you must first create a data catalog a
 can then perform the analysis:
 
 ```python3
-from analysis_scripts.create_catalog import create_catalog
-from analysis_scripts.plugins import list_plugins, plugin_requirements, run_plugin
+from analysis_scripts.plugins import available_plugins, plugin_requirements, run_plugin
 
 
 # Create a data catalog.
-create_catalog(pp_dir, "catalog.json")
+# Some code to create a data "catalog.json" ...
 
 # Show the installed plugins.
-list_plugins()
+print(available_plugins())
 
 # Run the radiative fluxes plugin.
 name = "freanalysis_radiation"  # Name of the custom analysis script you want to run.
-reqs = plugin_requirements(name)
-print(reqs)
-run_plugin(name, "catalog.json", "pngs")
+print(plugin_requirements(name))
+figures = run_plugin(name, "catalog.json", "pngs")
 ```
