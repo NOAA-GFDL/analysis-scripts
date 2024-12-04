@@ -5,11 +5,10 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "analysis-scripts"
-version = "0.1"
+name = "analysis_scripts"
+version = "0.0.1"
 dependencies = [
-    "intake",
-    "intake-esm",
+    "pytest",
 ]
 requires-python = ">= 3.6"
 authors = [
@@ -18,7 +17,7 @@ authors = [
 maintainers = [
     {name = "developer", email = "developer-email@address.domain"},
 ]
-description = "Framework for analyzing GFDL model output"
+description = "Flexible Runtime Environment analysis package"
 readme = "README.md"
 classifiers = [
     "Programming Language :: Python"

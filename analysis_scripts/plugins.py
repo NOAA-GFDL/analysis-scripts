@@ -2,7 +2,7 @@ import importlib
 import inspect
 import pkgutil
 
-from analysis_scripts import AnalysisScript
+from .base_class import AnalysisScript
 
 
 # Find all installed python modules with names that start with "freanalysis_"
@@ -10,6 +10,11 @@ discovered_plugins = {}
 for finder, name, ispkg in pkgutil.iter_modules():
     if name.startswith("freanalysis_"):
         discovered_plugins[name] = importlib.import_module(name)
+
+
+class UnknownPluginError(BaseException):
+    """Custom exception for when an invalid plugin name is used."""
+    pass
 
 
 def _plugin_object(name):
@@ -27,7 +32,12 @@ def _plugin_object(name):
             plugin module.
     """
     # Loop through all attributes in the plugin package with the input name.
-    for attribute in vars(discovered_plugins[name]).values():
+    try:
+        plugin_module = discovered_plugins[name]
+    except KeyError:
+        raise UnknownPluginError(f"could not find analysis script plugin {name}.")
+
+    for attribute in vars(plugin_module).values():
        # Try to find a class that inherits from the AnalysisScript class.
        if inspect.isclass(attribute) and AnalysisScript in attribute.__bases__:
            # Instantiate an object of this class.
