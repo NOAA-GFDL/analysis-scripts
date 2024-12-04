@@ -7,7 +7,7 @@ scripts that produce figures and tables from GFDL model output.  This work will 
 by a simple web application to provide users an easy interface to interact with model
 output data.
 
-### Requirements
+### Repository Structure
 The code in this repository is broken up into components:
 
 - analysis-scripts - A very simple package that just defines an abstract base class that
@@ -16,11 +16,11 @@ The code in this repository is broken up into components:
                  for making common plots.
 - freanalysis - A package that is designed to be used by whatever workflow is responsible
                 for running the analysis.
-- freanalysis_aerosol - A plugin that creates aerosl mass figures.
-- freanalysis_clouds - A plugin that creates cloud amount figures.
-- freanalysis_radiation - A plugin that creates radiative flux figures.
+- freanalysis_aerosol - An example plugin that creates aerosl mass figures.
+- freanalysis_clouds - An example plugin that creates cloud amount figures.
+- freanalysis_radiation - An example plugin that creates radiative flux figures.
 
-### How to install everything
+### Installing the basic components
 For now I'd recommend creating a virtual enviroment, and then installing each of the
 packages listed above:
 

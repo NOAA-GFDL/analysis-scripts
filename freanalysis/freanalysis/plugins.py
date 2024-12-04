@@ -26,8 +26,11 @@ def _plugin_object(name):
         ValueError if no object that inhertis from AnalysisScript is found in the
             plugin module.
     """
+    # Loop through all attributes in the plugin package with the input name.
     for attribute in vars(discovered_plugins[name]).values():
+       # Try to find a class that inherits from the AnalysisScript class.
        if inspect.isclass(attribute) and AnalysisScript in attribute.__bases__:
+           # Instantiate an object of this class.
            return attribute()
     raise ValueError(f"could not find compatible object in {name}.") 
 
