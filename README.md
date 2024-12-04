@@ -96,7 +96,7 @@ In order to run a custom analysis script, you must first create a data catalog a
 can then perform the analysis:
 
 ```python3
-from analysis_scripts.plugins import available_plugins, plugin_requirements, run_plugin
+from analysis_scripts import available_plugins, plugin_requirements, run_plugin
 
 
 # Create a data catalog.
