@@ -1,5 +1,5 @@
 # Test the core package.
-name: Test analysis_scripts
+name: Test analysis_scripts core functionality
 
 on: [pull_request]
 
@@ -21,8 +21,10 @@ jobs:
 
     - name: Install dependencies
       run: |
+        cd core/analysis_scripts
         python -m pip install .
 
     - name: Run the unit tests
       run: |
+        cd core/analysis_scripts
         pytest --capture=tee-sys tests
