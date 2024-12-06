@@ -5,11 +5,21 @@ import pkgutil
 from .base_class import AnalysisScript
 
 
-# Find all installed python modules with names that start with "freanalysis_"
+# Dictionary of found plugins.
 discovered_plugins = {}
-for finder, name, ispkg in pkgutil.iter_modules():
-    if name.startswith("freanalysis_"):
-        discovered_plugins[name] = importlib.import_module(name)
+
+
+def find_plugins(path=None):
+    """Find all installed python modules with names that start with 'freanalysis_'."""
+    if path:
+        path = [path,]
+    for finder, name, ispkg in pkgutil.iter_modules(path):
+        if name.startswith("freanalysis_"):
+            discovered_plugins[name] = importlib.import_module(name)
+
+
+# Update plugin dictionary.
+find_plugins()
 
 
 class UnknownPluginError(BaseException):
