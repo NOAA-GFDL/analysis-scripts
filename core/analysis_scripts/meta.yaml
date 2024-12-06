@@ -1,0 +1,19 @@
+package:
+  name: analysis_scripts
+  version: 0.0.1
+
+source:
+  path: .
+
+build:
+  script: "{{ PYTHON }} -m pip install . -vv"
+  number: 0
+  noarch: python
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - pytest

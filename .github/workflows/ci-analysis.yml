@@ -1,5 +1,5 @@
-# Installs the Python dependencies and runs the freanalysis_clouds plugin.
-name: Test freanalysis_clouds plugin
+# Test the core package.
+name: Test analysis_scripts core functionality
 
 on: [pull_request]
 
@@ -13,40 +13,18 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
-      
+
     - name: Install dependencies
       run: |
-        # $CONDA is an environment variable pointing to the root of the miniconda directory
-        echo $CONDA/bin >> $GITHUB_PATH
-        conda config --add channels noaa-gfdl
-        conda config --append channels conda-forge
-        conda create --name analysis-script-testing
-        conda install -n analysis-script-testing catalogbuilder -c noaa-gfdl
-        #conda activate analysis-script-testing
-        conda install pip
-        cd analysis-scripts
-        $CONDA/envs/analysis-script-testing/bin/python -m pip install .; cd ..
-        cd figure_tools
-        $CONDA/envs/analysis-script-testing/bin/python -m pip install .; cd ..
-        cd freanalysis
-        $CONDA/envs/analysis-script-testing/bin/python -m pip install .; cd ..
-        cd freanalysis_clouds
-        $CONDA/envs/analysis-script-testing/bin/python -m pip install .; cd ..
-        
-    - name: Generate catalog and run freanalysis_clouds
+        cd core/analysis_scripts
+        python -m pip install .
+
+    - name: Run the unit tests
       run: |
-         $CONDA/envs/analysis-script-testing/bin/pytest --capture=tee-sys tests/test_freanalysis_clouds.py
-    - name: upload-artifacts
-      uses: actions/upload-artifact@v4
-      with:
-          name: workflow-artifacts1 
-          path: |
-            ${{ github.workspace }}/tests/data-catalog.json
-            ${{ github.workspace }}/tests/data-catalog.csv
-    - name: Run freanalysis_land
-      run: |
-         $CONDA/envs/analysis-script-testing/bin/pytest tests/test_freanalysis_land
+        cd core/analysis_scripts
+        pytest --capture=tee-sys tests

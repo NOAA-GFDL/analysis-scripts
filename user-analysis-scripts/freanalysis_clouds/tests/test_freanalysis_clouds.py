@@ -5,9 +5,10 @@ from subprocess import run
 from tempfile import TemporaryDirectory
 import sys
 
-from freanalysis.plugins import list_plugins, plugin_requirements, run_plugin
+from analysis_scripts import list_plugins, plugin_requirements, run_plugin
 import catalogbuilder
 from catalogbuilder.scripts import gen_intake_gfdl
+
 
 def download_test_data(stem):
     """Downloads test datasets from a FTP server.
@@ -34,6 +35,7 @@ def download_test_data(stem):
             ftp.retrbinary(f"RETR {name}", open(data_directory / name, "wb").write)
     return catalog_root.resolve()
 
+
 def plugin(json, pngs_directory="pngs"):
     """Run the plugin to create the figure.
 
@@ -48,13 +50,14 @@ def plugin(json, pngs_directory="pngs"):
 
 
 def test_freanalysis_clouds():
-    
     with TemporaryDirectory() as tmp:
         chdir(Path(tmp))
         path = download_test_data(stem=tmp)
         yaml = Path(__file__).resolve().parent / "mdtf_timeslice_catalog.yaml"
-        outputpath = Path(__file__).resolve().parent / "data-catalog" 
-        #Creates data catalog using the scripts in catalogbuilder
-        csv, json = gen_intake_gfdl.create_catalog(input_path=str(path),output_path=outputpath,config=str(yaml))
+        outputpath = Path(__file__).resolve().parent / "data-catalog"
+        # Creates data catalog using the scripts in catalogbuilder
+        csv, json = gen_intake_gfdl.create_catalog(input_path=str(path),
+                                                   output_path=outputpath,
+                                                   config=str(yaml))
         print(json,csv)
         plugin(json)

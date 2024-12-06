@@ -1,5 +1,5 @@
 # analysis-scripts
-A framework for analyzing GFDL model output
+A framework for analyzing GFDL model output.
 
 ### Motivation
 The goal of this project is to provide a simple API to guide the development of
@@ -7,10 +7,18 @@ scripts that produce figures and tables from GFDL model output.  This work will 
 by a simple web application to provide users an easy interface to interact with model
 output data.
 
-### Requirements
-No external packages are required.
+### How to install this package
+For now I'd recommend creating a virtual enviroment, and then installing the package inside
+of it.
 
-### How to use this framework.
+```bash
+$ python3 -m venv env
+$ source env/bin/activate
+$ pip install --upgrade pip
+$ pip install .
+```
+
+### How to use this framework
 Custom analysis scripts classes can be created that inherit the `AnalysisScript` base
 class, then override its contructor, `requires`, and `run_analysis` methods. For example:
 
@@ -67,12 +75,13 @@ class NewAnalysisScript(AnalysisScript):
             }
         })
 
-    def run_analysis(self, catalog, png_dir, reference_catalog=None):
+    def run_analysis(self, catalog, png_dir, config=None, reference_catalog=None):
         """Runs the analysis and generates all plots and associated datasets.
 
         Args:
             catalog: Path to a model output catalog.
             png_dir: Directory to store output png figures in.
+            config: Dictionary of configuration options.
             reference_catalog: Path to a catalog of reference data.
 
         Returns:
@@ -80,4 +89,24 @@ class NewAnalysisScript(AnalysisScript):
         """
         Do some stuff to create the figures.
         return ["figure1.png", "figure2.png",]
+```
+
+### Running a custom analysis script
+In order to run a custom analysis script, you must first create a data catalog and
+can then perform the analysis:
+
+```python3
+from analysis_scripts import available_plugins, plugin_requirements, run_plugin
+
+
+# Create a data catalog.
+# Some code to create a data "catalog.json" ...
+
+# Show the installed plugins.
+print(available_plugins())
+
+# Run the radiative fluxes plugin.
+name = "freanalysis_radiation"  # Name of the custom analysis script you want to run.
+print(plugin_requirements(name))
+figures = run_plugin(name, "catalog.json", "pngs")
 ```

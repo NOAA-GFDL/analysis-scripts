@@ -2,14 +2,29 @@ import importlib
 import inspect
 import pkgutil
 
-from analysis_scripts import AnalysisScript
+from .base_class import AnalysisScript
 
 
-# Find all installed python modules with names that start with "freanalysis_"
+# Dictionary of found plugins.
 discovered_plugins = {}
-for finder, name, ispkg in pkgutil.iter_modules():
-    if name.startswith("freanalysis_"):
-        discovered_plugins[name] = importlib.import_module(name)
+
+
+def find_plugins(path=None):
+    """Find all installed python modules with names that start with 'freanalysis_'."""
+    if path:
+        path = [path,]
+    for finder, name, ispkg in pkgutil.iter_modules(path):
+        if name.startswith("freanalysis_"):
+            discovered_plugins[name] = importlib.import_module(name)
+
+
+# Update plugin dictionary.
+find_plugins()
+
+
+class UnknownPluginError(BaseException):
+    """Custom exception for when an invalid plugin name is used."""
+    pass
 
 
 def _plugin_object(name):
@@ -26,8 +41,16 @@ def _plugin_object(name):
         ValueError if no object that inhertis from AnalysisScript is found in the
             plugin module.
     """
-    for attribute in vars(discovered_plugins[name]).values():
+    # Loop through all attributes in the plugin package with the input name.
+    try:
+        plugin_module = discovered_plugins[name]
+    except KeyError:
+        raise UnknownPluginError(f"could not find analysis script plugin {name}.")
+
+    for attribute in vars(plugin_module).values():
+       # Try to find a class that inherits from the AnalysisScript class.
        if inspect.isclass(attribute) and AnalysisScript in attribute.__bases__:
+           # Instantiate an object of this class.
            return attribute()
     raise ValueError(f"could not find compatible object in {name}.") 
 
@@ -58,16 +81,17 @@ def plugin_requirements(name):
     return _plugin_object(name).requires()
 
 
-def run_plugin(name, catalog, png_dir, reference_catalog=None):
+def run_plugin(name, catalog, png_dir, config=None, reference_catalog=None):
     """Runs the plugin's analysis.
 
     Args:
         name: Name of the plugin.
         catalog: Path to the data catalog.
         png_dir: Directory where the output figures will be stored.
+        config: Dictionary of configuration values.
         catalog: Path to the catalog of reference data.
 
     Returns:
         A list of png figure files that were created by the analysis.
     """
-    return _plugin_object(name).run_analysis(catalog, png_dir, reference_catalog)
+    return _plugin_object(name).run_analysis(catalog, png_dir, config, reference_catalog)

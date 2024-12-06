@@ -5,11 +5,13 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "analysis-scripts"
+name = "figure_tools"
 version = "0.1"
 dependencies = [
-    "intake",
-    "intake-esm",
+    "cartopy",
+    "matplotlib",
+    "numpy",
+    "xarray",
 ]
 requires-python = ">= 3.6"
 authors = [
@@ -18,7 +20,7 @@ authors = [
 maintainers = [
     {name = "developer", email = "developer-email@address.domain"},
 ]
-description = "Framework for analyzing GFDL model output"
+description = "Helper tools to make common plots"
 readme = "README.md"
 classifiers = [
     "Programming Language :: Python"

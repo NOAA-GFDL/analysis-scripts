@@ -5,14 +5,10 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "figure_tools"
-version = "0.1"
+name = "analysis_scripts"
+version = "0.0.1"
 dependencies = [
-    "cartopy",
-    "matplotlib",
-    "numpy",
-    "scipy",
-    "xarray",
+    "pytest",
 ]
 requires-python = ">= 3.6"
 authors = [
@@ -21,7 +17,7 @@ authors = [
 maintainers = [
     {name = "developer", email = "developer-email@address.domain"},
 ]
-description = "Helper tools to make common plots"
+description = "Flexible Runtime Environment analysis package"
 readme = "README.md"
 classifiers = [
     "Programming Language :: Python"
