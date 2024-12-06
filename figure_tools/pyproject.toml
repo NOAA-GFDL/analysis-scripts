@@ -1,0 +1,30 @@
+[build-system]
+requires = [
+    "setuptools >= 40.9.0",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "figure_tools"
+version = "0.1"
+dependencies = [
+    "cartopy",
+    "matplotlib",
+    "numpy",
+    "xarray",
+]
+requires-python = ">= 3.6"
+authors = [
+    {name = "developers"},
+]
+maintainers = [
+    {name = "developer", email = "developer-email@address.domain"},
+]
+description = "Helper tools to make common plots"
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python"
+]
+
+[project.urls]
+repository = "https://github.com/NOAA-GFDL/analysis-scripts.git"
