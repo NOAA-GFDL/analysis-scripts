@@ -75,16 +75,16 @@ class CloudAnalysisScript(AnalysisScript):
             },
         })
 
-    def run_analysis(self, catalog, png_dir, reference_catalog=None, config={}):
+    def run_analysis(self, catalog, png_dir, config=None, reference_catalog=None):
         """Runs the analysis and generates all plots and associated datasets.
 
         Args:
             catalog: Path to a catalog.
             png_dir: Path to the directory where the figures will be made.
-            reference_catalog: Path to a catalog of reference data.
             config: Dictonary of catalog metadata.  Will overwrite the
                     data defined in the Metadata helper class if they both
                     contain the same keys.
+            reference_catalog: Path to a catalog of reference data.
 
         Returns:
             A list of paths to the figures that were created.
@@ -95,8 +95,9 @@ class CloudAnalysisScript(AnalysisScript):
 
         # Connect to the catalog.
         catalog = intake.open_esm_datastore(catalog)
-        print(catalog)
 
+        if not config:
+            config = {}
         maps = {}
         for name, variable in self.metadata.variables().items():
             # Filter the catalog down to a single dataset for each variable.
