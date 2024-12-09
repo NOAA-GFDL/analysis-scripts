@@ -21,7 +21,6 @@ class _PathAdjuster(object):
         """Adjusts the sys path so the modules and packages can be imported."""
         if self.path not in sys.path:
             sys.path.insert(0, self.path)
-            print(sys.path)
         return self
 
     def __exit__(self, exception_type, exception_value, traceback):
