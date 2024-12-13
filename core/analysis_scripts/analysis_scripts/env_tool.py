@@ -130,20 +130,3 @@ class VirtualEnvManager(object):
         """
         commands = [self.activate, f"pip uninstall {name}"]
         return self._execute(commands)
-
-
-def analysis_script_test():
-    env = VirtualEnvManager("foo")
-    name = "freanalysis_clouds"
-    url = "https://github.com/noaa-gfdl/analysis-scripts.git"
-    with TemporaryDirectory() as tmp:
-        tmp_path = Path(tmp)
-        run(["git", "clone", url, str(tmp_path / "scripts")])
-        output = env.install_package(str(tmp_path / "scripts" / "core" / "figure_tools"))
-        output = env.install_package(str(tmp_path / "scripts" / "core" / "analysis_scripts"))
-        output = env.install_package(str(tmp_path / "scripts" / "user-analysis-scripts" / name))
-    env.run_analysis_plugin(name, "fake-catalog", ".", config={"a": "b"})
-
-
-if __name__ == "__main__":
-    analysis_script_test()
