@@ -87,7 +87,7 @@ def _plugin_object(name):
     raise ValueError(f"could not find compatible object in {name}.") 
 
 
-def available_plugins(library_directory):
+def available_plugins(library_directory=None):
     """Returns a list of plugin names."""
     find_plugins(library_directory)
     return sorted(list(discovered_plugins.keys()))
