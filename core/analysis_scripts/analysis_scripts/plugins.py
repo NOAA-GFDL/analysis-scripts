@@ -1,57 +1,15 @@
 import importlib
 import inspect
 import pkgutil
-import sys
 
 from .base_class import AnalysisScript
 
 
-class _PathAdjuster(object):
-    """Helper class to adjust where python tries to import modules from."""
-    def __init__(self, path):
-        """Initialize the object.
-
-        Args:
-            path: Path to look in for python modules and packages.
-        """
-        self.path = path
-        self.old_sys_path = sys.path
-
-    def __enter__(self):
-        """Adjusts the sys path so the modules and packages can be imported."""
-        if self.path not in sys.path:
-            sys.path.insert(0, self.path)
-        return self
-
-    def __exit__(self, exception_type, exception_value, traceback):
-        """Undoes the sys path adjustment."""
-        if sys.path != self.old_sys_path:
-            sys.path = self.old_sys_path
-
-
 # Dictionary of found plugins.
 discovered_plugins = {}
-
-
-def find_plugins(path=None):
-    """Find all installed python modules with names that start with 'freanalysis_'.
-
-    Args:
-        path: Custom directory where modules and packages are installed.
-    """
-    if path:
-        path = [path,]
-    for finder, name, ispkg in pkgutil.iter_modules(path):
-        if name.startswith("freanalysis_"):
-            if path:
-                with _PathAdjuster(path[0]):
-                    discovered_plugins[name] = importlib.import_module(name)
-            else:
-                discovered_plugins[name] = importlib.import_module(name)
-
-
-# Update plugin dictionary.
-find_plugins()
+for finder, name, ispkg in pkgutil.iter_modules():
+    if name.startswith("freanalysis_"):
+        discovered_plugins[name] = importlib.import_module(name)
 
 
 class UnknownPluginError(BaseException):
