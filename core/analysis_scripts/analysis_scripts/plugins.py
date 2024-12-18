@@ -1,15 +1,9 @@
 import importlib
 import inspect
+from pathlib import Path
 import pkgutil
 
 from .base_class import AnalysisScript
-
-
-# Dictionary of found plugins.
-discovered_plugins = {}
-for finder, name, ispkg in pkgutil.iter_modules():
-    if name.startswith("freanalysis_"):
-        discovered_plugins[name] = importlib.import_module(name)
 
 
 class UnknownPluginError(BaseException):
@@ -17,8 +11,72 @@ class UnknownPluginError(BaseException):
     pass
 
 
+def _find_plugin_class(module):
+    """Looks for a class that inherits from AnalysisScript.
+
+    Args:
+        module: Module object.
+
+    Returns:
+        Class that inherits from AnalysisScript.
+
+    Raises:
+        UnknownPluginError if no class is found.
+    """
+    for attribute in vars(module).values():
+        # Try to find a class that inherits from the AnalysisScript class.
+        if inspect.isclass(attribute) and AnalysisScript in attribute.__bases__:
+            # Instantiate an object of this class.
+            return attribute
+    raise UnknownPluginError("could not find class that inherts from AnalysisScripts")
+
+
+sanity_counter = 0  # How much recursion is happening.
+maximum_craziness = 100  # This is too much recursion.
+
+
+def _recursive_search(name, ispkg):
+    """Recursively search for a module that has a class that inherits from AnalysisScript.
+
+    Args:
+        name: String name of the module.
+        ispkg: Flag telling whether or not the module is a package.
+
+    Returns:
+        Class that inherits from AnalysisScript.
+
+    Raises:
+        UnknownPluginError if no class is found.
+        ValueError if there is too much recursion.
+    """
+    global sanity_counter
+    sanity_counter += 1
+    if sanity_counter > maximum_craziness:
+        raise ValueError(f"recursion level {sanity_counter} too high.")
+
+    module = importlib.import_module(name)
+    try:
+        return _find_plugin_class(module)
+    except UnknownPluginError:
+        if not ispkg:
+            # Do not recurse further.
+            raise
+        paths = module.__spec__.submodule_search_locations
+        for finder, subname, ispkg in pkgutil.iter_modules(paths):
+            subname = f"{name}.{subname}"
+            return _recursive_search(subname, ispkg)
+
+
+# Dictionary of found plugins.
+discovered_plugins = {}
+for finder, name, ispkg in pkgutil.iter_modules():
+    if name.startswith("freanalysis_") and ispkg:
+        discovered_plugins[name] = _recursive_search(name, True)
+
+
 def _plugin_object(name):
-    """Searches for a class that inherits from AnalysisScript in the plugin module.
+    """Attempts to create an object from a class that inherits from AnalysisScript in
+       the plugin module.
 
     Args:
         name: Name of the plugin.
@@ -27,22 +85,12 @@ def _plugin_object(name):
         The object that inherits from AnalysisScript.
 
     Raises:
-        KeyError if the input name does not match any installed plugins.
-        ValueError if no object that inhertis from AnalysisScript is found in the
-            plugin module.
+        UnknownPluginError if the input name is not in the disovered_plugins dictionary.
     """
-    # Loop through all attributes in the plugin package with the input name.
     try:
-        plugin_module = discovered_plugins[name]
+        return discovered_plugins[name]()
     except KeyError:
         raise UnknownPluginError(f"could not find analysis script plugin {name}.")
-
-    for attribute in vars(plugin_module).values():
-       # Try to find a class that inherits from the AnalysisScript class.
-       if inspect.isclass(attribute) and AnalysisScript in attribute.__bases__:
-           # Instantiate an object of this class.
-           return attribute()
-    raise ValueError(f"could not find compatible object in {name}.") 
 
 
 def available_plugins():
