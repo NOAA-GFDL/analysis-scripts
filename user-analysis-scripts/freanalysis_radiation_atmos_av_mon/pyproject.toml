@@ -5,14 +5,11 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "figure_tools"
+name = "freanalysis_radiation_atmos_av_mon"
 version = "0.1"
 dependencies = [
-    "cartopy",
-    "matplotlib",
-    "numpy",
-    "scipy",
-    "xarray",
+    "intake",
+    "intake-esm",
 ]
 requires-python = ">= 3.6"
 authors = [
@@ -21,7 +18,7 @@ authors = [
 maintainers = [
     {name = "developer", email = "developer-email@address.domain"},
 ]
-description = "Helper tools to make common plots"
+description = "Radiative flux comparison to CERES"
 readme = "README.md"
 classifiers = [
     "Programming Language :: Python"

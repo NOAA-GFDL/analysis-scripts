@@ -10,6 +10,45 @@ class TimeSubset(object):
         """
         self.data = data
 
+    def annual_climatology(self, data, year_range):
+        years = [x for x in range(year_range[0], year_range[1] + 1)]
+        sum_, counter = None, 0
+        for i, point in enumerate(self.data):
+            _, year = self._month_and_year(point)
+            if year in years:
+                if sum_ is None:
+                    sum_ = data[i, ...]
+                else:
+                    sum_ += data[i, ...]
+                counter += 1
+
+        if counter != 12*len(years):
+            raise ValueError("Expected monthly data and did not find correct number of months.")
+        return array(sum_[...]/counter)
+
+    def seasonal_climatology(self, data, year_range, month_range):
+        years = [x for x in range(year_range[0], year_range[1] + 1)]
+        if month_range[1] - month_range[0] < 0:
+            # We have crossed to the next year.
+            months = [x for x in range(month_range[0], 13)] + \
+                     [x for x in range(1,  month_range[1] + 1)]
+        else:
+            months = [x for x in range(month_range[0], month_range[1] + 1)]
+
+        sum_, counter = None, 0
+        for i, point in enumerate(self.data):
+            month, year = self._month_and_year(point)
+            if month in months and year in years:
+                if sum_ is None:
+                    sum_ = data[i, ...]
+                else:
+                    sum_ += data[i, ...]
+                counter += 1
+
+        if counter != len(months)*len(years):
+            raise ValueError("Expected monthly data and did not find enough months.")
+        return array(sum_[...]/counter)
+
     def annual_mean(self, data, year):
         """Calculates the annual mean of the input date for the input year.
 

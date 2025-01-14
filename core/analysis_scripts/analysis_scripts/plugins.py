@@ -64,7 +64,11 @@ def _recursive_search(name, ispkg):
         paths = module.__spec__.submodule_search_locations
         for finder, subname, ispkg in pkgutil.iter_modules(paths):
             subname = f"{name}.{subname}"
-            return _recursive_search(subname, ispkg)
+            try:
+                return _recursive_search(subname, ispkg)
+            except UnknownPluginError:
+                # Didn't find it, so continue to iterate.
+                pass
 
 
 # Dictionary of found plugins.
