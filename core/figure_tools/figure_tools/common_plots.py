@@ -5,6 +5,30 @@ from numpy import abs, max, min, percentile
 from .figure import Figure
 
 
+def chuck_radiation(reference, model, title):
+    figure = Figure(num_rows=3, num_columns=1, title=title, size=(14, 12))
+
+    # Create a common color bar for the reference and model.
+    colorbar_range = [120, 340]
+
+    # Model data.
+    global_mean = model.global_mean()
+    figure.add_map(model, f"Model [Mean: {global_mean:.2f}]", 1,
+                   colorbar_range=colorbar_range, num_levels=11, colormap="jet")
+
+    # Reference data.
+    global_mean = reference.global_mean()
+    figure.add_map(reference, f"Obersvations [Mean: {global_mean:.2f}]", 2,
+                   colorbar_range=colorbar_range, num_levels=11, colormap="jet")
+
+    # Difference between the reference and the model.
+    difference = model - reference
+    color_range = [-34., 34.]
+    figure.add_map(difference, f"Model - Obs [Mean: {global_mean:.2f}]", 3,
+                   colorbar_range=color_range, colormap="jet", normalize_colors=True)
+    return figure
+
+
 def observation_vs_model_maps(reference, model, title):
     figure = Figure(num_rows=2, num_columns=2, title=title, size=(14, 12))
 

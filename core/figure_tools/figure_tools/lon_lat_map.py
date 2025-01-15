@@ -54,7 +54,7 @@ class LonLatMap(object):
 
     @classmethod
     def from_xarray_dataset(cls, dataset, variable, time_method=None, time_index=None,
-                            year=None):
+                            year=None, year_range=None, month_range=None):
         """Instantiates a LonLatMap object from an xarray dataset."""
         v = dataset.data_vars[variable]
         data = array(v.data[...])
@@ -75,8 +75,25 @@ class LonLatMap(object):
                 time = TimeSubset(time)
                 data = time.annual_mean(data, year)
                 timestamp = r"$\bar{t} = $" + str(year)
+            elif "climatology" in time_method:
+                if year_range == None or len(year_range) != 2:
+                    raise ValueError("year_range is required ([star year, end year]" +
+                                     " when time_method is a climatology.")
+                if time_method == "annual climatology":
+                    time = TimeSubset(time)
+                    data = time.annual_climatology(data, year_range)
+                    timestamp = f"{year_range[0]} - {year_range[1]} annual climatology"
+                elif time_method == "seasonal climatology":
+                    if month_range == None or len(month_range) != 2:
+                        raise ValueError("month_range is required ([start month, end month])" +
+                                         " when time_method='seasonal climatology'.")
+                    time = TimeSubset(time)
+                    data = time.seasonal_climatology(data, year_range, month_range)
+                    timestamp = ""
             else:
-                raise ValueError("time_method must be either 'instantaneous' or 'annual mean.'")
+                valid_values = ["instantaneous", "annual mean", "annual climatology",
+                                "seasonal climatology"]
+                raise ValueError(f"time_method must one of :{valid_values}.")
         else:
             timestamp = None
 

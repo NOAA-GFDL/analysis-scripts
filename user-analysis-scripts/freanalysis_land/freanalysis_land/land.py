@@ -1,12 +1,14 @@
+import datetime
 import json
+from pathlib import Path
+import re
+
 from analysis_scripts import AnalysisScript
 import intake
 import matplotlib.pyplot as plt
 import cartopy
 import cartopy.crs as ccrs
-import datetime
 import pandas as pd
-import re
 import xarray as xr
 
 
@@ -32,12 +34,13 @@ class LandAnalysisScript(AnalysisScript):
         raise NotImplementedError("you must override this function.")
         return json.dumps("{json of metadata MDTF format.}")
     
-    def global_map(self,dataset,var,dates,plt_time=None,colormap='viridis',title=''):
+    def global_map(self, dataset, var, dates, plt_time=None, colormap='viridis', title=''):
         """
         Generate a global map and regional subplots for a specified variable from an xarray dataset.
 
-        This function creates a global map and several regional subplots (North America, South America, Europe, Africa, Asia, and Australia)
-        using the specified variable from an xarray dataset. The generated map will be saved as a PNG file.
+        This function creates a global map and several regional subplots (North America,
+        South America, Europe, Africa, Asia, and Australia) using the specified variable
+        from an xarray dataset. The generated map will be saved as a PNG file.
 
         Parameters:
         ----------
@@ -78,7 +81,7 @@ class LandAnalysisScript(AnalysisScript):
         lon = dataset.lon
         lat = dataset.lat
 
-        if plt_time is None: plt_time=len(dates)-1
+        if plt_time is None: plt_time = len(dates) - 1
 
         data = dataset[var][plt_time].values
         projection = ccrs.PlateCarree()
@@ -115,13 +118,12 @@ class LandAnalysisScript(AnalysisScript):
         plt.tight_layout()
 
         return fig
-        # plt.savefig(var+'_global_map.png')
-        # plt.close()
 
-    def timeseries(self, dataset,var,dates_period,var_range=None,minlon = 0,maxlon = 360,minlat = -90,maxlat=90,timerange=None,title=''):
+    def timeseries(self, dataset, var, dates_period, var_range=None, minlon = 0,
+                   maxlon = 360, minlat = -90, maxlat=90, timerange=None, title=''):
         '''
-        Generate a time series plot of the specified variable from a dataset within a given geographic and temporal range.
-
+        Generate a time series plot of the specified variable from a dataset within a
+        given geographic and temporal range.
 
         Parameters:
         -----------
@@ -132,7 +134,8 @@ class LandAnalysisScript(AnalysisScript):
         dates_period : pandas.DatetimeIndex
             The dates for the time series data.
         var_range : tuple of float, optional
-            The range of variable values to include in the plot (min, max). If not provided, the default range is (0, inf).
+            The range of variable values to include in the plot (min, max). If not provided,
+            the default range is (0, inf).
         minlon : float, optional
             The minimum longitude to include in the plot. Default is 0.
         maxlon : float, optional
@@ -142,7 +145,8 @@ class LandAnalysisScript(AnalysisScript):
         maxlat : float, optional
             The maximum latitude to include in the plot. Default is 90.
         timerange : tuple of int, optional
-            The range of years to plot (start_year, end_year). If not provided, all available years in the dataset will be plotted.
+            The range of years to plot (start_year, end_year). If not provided, all
+            available years in the dataset will be plotted.
         title : str, optional
             The title of the plot. Default is an empty string.
 
@@ -150,42 +154,48 @@ class LandAnalysisScript(AnalysisScript):
         --------
         matplotlib.figure.Figure
             The figure object containing the generated time series plot.
-        
+
         Notes:
         ------
-        The function filters the dataset based on the provided variable range, longitude, and latitude bounds. It then 
-        calculates the monthly and annual means of the specified variable and plots the seasonal and annual means.
-        
+        The function filters the dataset based on the provided variable range, longitude,
+        and latitude bounds. It then calculates the monthly and annual means of the
+        specified variable and plots the seasonal and annual means.
         '''
         if var_range is not None:
-            data_filtered = dataset.where((dataset[var] > var_range[0]) & (dataset[var] <= var_range[1]) &
-                                        (dataset.lat >= minlat) & (dataset.lon >= minlon) &
-                                        (dataset.lat <= maxlat) & (dataset.lon <= maxlon))
+            data_filtered = dataset.where((dataset[var] > var_range[0]) & 
+                                          (dataset[var] <= var_range[1]) &
+                                          (dataset.lat >= minlat) &
+                                          (dataset.lon >= minlon) &
+                                          (dataset.lat <= maxlat) &
+                                          (dataset.lon <= maxlon))
         else:
             data_filtered = dataset.where((dataset[var] > 0) &
-                                        (dataset.lat >= minlat) & (dataset.lon >= minlon) &
-                                        (dataset.lat <= maxlat) & (dataset.lon <= maxlon))
+                                          (dataset.lat >= minlat) &
+                                          (dataset.lon >= minlon) &
+                                          (dataset.lat <= maxlat) &
+                                          (dataset.lon <= maxlon))
         data_filtered['time'] = dates_period
 
         data_df = pd.DataFrame(index = dates_period)
-        data_df['monthly_mean'] = data_filtered.resample(time='YE').mean(dim=['lat','lon'],skipna=True)[var].values
+        data_df['monthly_mean'] = data_filtered.resample(time='YE').mean(dim=['lat','lon'],
+                                                                         skipna=True)[var].values
         data_df['monthly_shift'] = data_df['monthly_mean'].shift(1)
 
         if timerange is not None:
-            ys, ye = (str(timerange[0]),str(timerange[1]))
+            ys, ye = (str(timerange[0]), str(timerange[1]))
             plot_df = data_df.loc[f'{ys}-1-1':f'{ye}-1-1']
         else:
             plot_df = data_df
 
         fig, ax = plt.subplots()
-        plot_df.resample('Q').mean()['monthly_shift'].plot(ax=ax,label='Seasonal Mean')
-        plot_df.resample('Y').mean()['monthly_mean'].plot(ax=ax,label='Annual Mean')
+        plot_df.resample('Q').mean()['monthly_shift'].plot(ax=ax, label='Seasonal Mean')
+        plot_df.resample('Y').mean()['monthly_mean'].plot(ax=ax, label='Annual Mean')
         plt.legend()
         plt.title(title)
         plt.xlabel('Years')
         return fig
 
-    def run_analysis(self, catalog, png_dir, reference_catalog=None):
+    def run_analysis(self, catalog, png_dir, config=None, reference_catalog=None):
         """Runs the analysis and generates all plots and associated datasets.
 
         Args:
@@ -196,15 +206,17 @@ class LandAnalysisScript(AnalysisScript):
         Returns:
             A list of png figures.
         """
-        print ('WARNING: THESE FIGURES ARE FOR TESTING THE NEW ANALYSIS WORKFLOW ONLY AND SHOULD NOT BE USED IN ANY OFFICIAL MANNER FOR ANALYSIS OF LAND MODEL OUTPUT.')
+        print('WARNING: THESE FIGURES ARE FOR TESTING THE NEW ANALYSIS WORKFLOW ONLY' +
+              ' AND SHOULD NOT BE USED IN ANY OFFICIAL MANNER FOR ANALYSIS OF' +
+              ' LAND MODEL OUTPUT.')
         col = intake.open_esm_datastore(catalog)
         df = col.df
 
         # Soil Carbon
         var = 'cSoil'
-        print ('Soil Carbon Analysis')
-        cat = col.search(variable_id=var,realm='land_cmip')
-        other_dict = cat.to_dataset_dict(cdf_kwargs={'chunks':{'time':12},'decode_times':False})
+        print('Soil Carbon Analysis')
+        cat = col.search(variable_id=var, realm='land_cmip')
+        other_dict = cat.to_dataset_dict(cdf_kwargs={'chunks': {'time': 12}, 'decode_times': False})
         combined_dataset = xr.concat(list(dict(sorted(other_dict.items())).values()), dim='time')
 
         # Other data:
@@ -216,11 +228,13 @@ class LandAnalysisScript(AnalysisScript):
         dates_period = pd.PeriodIndex(dates,freq='D')
 
         sm_fig = self.global_map(combined_dataset,var,dates,title='Soil Carbon Content (kg/m^2)')
-        plt.savefig(png_dir+var+'_global_map.png')
+        figure_paths = [Path(png_dir) / f"{var}_global_map.png",]
+        plt.savefig(str(figure_paths[-1]))
         plt.close()
 
         ts_fig = self.timeseries(combined_dataset,var,dates_period,title='Global Average Soil Carbon')
-        plt.savefig(png_dir+var+'_global_ts.png')
+        figure_paths.append(Path(png_dir) / f"{var}_global_ts.png")
+        plt.savefig(str(figure_paths[-1]))
         plt.close()
 
         # Soil Moisture
@@ -239,5 +253,7 @@ class LandAnalysisScript(AnalysisScript):
         dates_period = pd.PeriodIndex(dates,freq='D')
 
         sm_fig = self.global_map(combined_dataset,var,dates,title='Soil Moisture (kg/m^2)')
-        plt.savefig(png_dir+var+'_global_map.png')
+        figure_paths.append(Path(png_dir) / f"{var}_global_map.png")
+        plt.savefig(str(figure_paths[-1]))
         plt.close()
+        return figure_paths

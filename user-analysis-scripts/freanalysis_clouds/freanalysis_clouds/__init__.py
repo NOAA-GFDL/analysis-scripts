@@ -81,7 +81,7 @@ class CloudAnalysisScript(AnalysisScript):
         Args:
             catalog: Path to a catalog.
             png_dir: Path to the directory where the figures will be made.
-            config: Dictonary of catalog metadata.  Will overwrite the
+            config: Dictionary of catalog metadata.  Will overwrite the
                     data defined in the Metadata helper class if they both
                     contain the same keys.
             reference_catalog: Path to a catalog of reference data.
@@ -103,7 +103,8 @@ class CloudAnalysisScript(AnalysisScript):
             # Filter the catalog down to a single dataset for each variable.
             query_params = {"variable_id": variable}
             query_params.update(vars(self.metadata))
-            query_params.update(config)
+            if config:
+                query_params.update(config)
             datasets = catalog.search(**query_params).to_dataset_dict(progressbar=False)
             if len(list(datasets.values())) != 1:
                 raise ValueError("could not filter the catalog down to a single dataset.", datasets)
