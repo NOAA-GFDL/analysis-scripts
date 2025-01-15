@@ -26,13 +26,13 @@ def _find_plugin_class(module):
     for attribute in vars(module).values():
         # Try to find a class that inherits from the AnalysisScript class.
         if inspect.isclass(attribute) and AnalysisScript in attribute.__bases__:
-            # Instantiate an object of this class.
+            # Return the class so an object can be instantiated from it later.
             return attribute
     raise UnknownPluginError("could not find class that inherts from AnalysisScripts")
 
 
-sanity_counter = 0  # How much recursion is happening.
-maximum_craziness = 100  # This is too much recursion.
+_sanity_counter = 0  # How much recursion is happening.
+_maximum_craziness = 100  # This is too much recursion.
 
 
 def _recursive_search(name, ispkg):
@@ -49,10 +49,10 @@ def _recursive_search(name, ispkg):
         UnknownPluginError if no class is found.
         ValueError if there is too much recursion.
     """
-    global sanity_counter
-    sanity_counter += 1
-    if sanity_counter > maximum_craziness:
-        raise ValueError(f"recursion level {sanity_counter} too high.")
+    global _sanity_counter
+    _sanity_counter += 1
+    if _sanity_counter > _maximum_craziness:
+        raise ValueError(f"recursion level {_sanity_counter} too high.")
 
     module = importlib.import_module(name)
     try:
@@ -72,10 +72,11 @@ def _recursive_search(name, ispkg):
 
 
 # Dictionary of found plugins.
-discovered_plugins = {}
+_discovered_plugins = {}
 for finder, name, ispkg in pkgutil.iter_modules():
     if name.startswith("freanalysis_") and ispkg:
-        discovered_plugins[name] = _recursive_search(name, True)
+        _sanity_counter = 0
+        _discovered_plugins[name] = _recursive_search(name, True)
 
 
 def _plugin_object(name):
@@ -92,14 +93,14 @@ def _plugin_object(name):
         UnknownPluginError if the input name is not in the disovered_plugins dictionary.
     """
     try:
-        return discovered_plugins[name]()
+        return _discovered_plugins[name]()
     except KeyError:
         raise UnknownPluginError(f"could not find analysis script plugin {name}.")
 
 
 def available_plugins():
     """Returns a list of plugin names."""
-    return sorted(list(discovered_plugins.keys()))
+    return sorted(list(_discovered_plugins.keys()))
 
 
 def list_plugins():
