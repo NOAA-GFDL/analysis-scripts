@@ -19,9 +19,9 @@
 
   "OUTPUT_DIR": "",
 
-  "conda_root": "/home/oar.gfdl.mdtf/miniconda3",
+  "conda_root": "",
 
-  "conda_env_root": "/home/oar.gfdl.mdtf/miniconda3/envs",
+  "conda_env_root": "",
 
   "micromamba_exe": "",
 

@@ -1,7 +1,14 @@
 from analysis_scripts import AnalysisScript
-from freanalysis_MDTF import hello
+import freanalysis_MDTF
+from freanalysis_MDTF.scripts import gen_config, grab_plots
+import MDTF_diagnostics
+MDTF_PACKAGE_PATH = MDTF_diagnostics.__path__[0]
 import os
+import shutil
 import json
+import subprocess
+
+_PACKAGE_PATH = freanalysis_MDTF.__path__[0]
 
 class MDTFAnalysisScript(AnalysisScript):
     """Custom Analysis script for some task.
@@ -23,7 +30,7 @@ class MDTFAnalysisScript(AnalysisScript):
         """
         return json.dumps({
             "settings": {
-                "activity_id": "he dataset convention",
+                "activity_id": "the dataset convention",
             },
             "dimensions": {
                 # These are just examples, you can put more/different ones.
@@ -35,20 +42,36 @@ class MDTFAnalysisScript(AnalysisScript):
             }
         })
 
-    def run_analysis(self, catalog, png_dir, config_file, config=None, reference_catalog=None):
+    def run_analysis(self, catalog: str, out_dir, config=None, reference_catalog=None):
         """Runs the analysis and generates all plots and associated datasets.
 
         Args:
-            catalog: Path to a model output catalog.
-            png_dir: Directory to store output png figures in.
-            config: Dictionary of configuration options.
-            reference_catalog: Path to a catalog of reference data.
+            catalog: Path to a model output catalog
+            out_dir: Directory to run and store the MDTF and output in (this replaces png_dir from the base class) 
+            config: Dictionary of configuration options. (REQUIRED [pods: list, startyr: str, endyr: str)
+            reference_catalog: Path to a catalog of reference data. (OPTIONAL)
 
         Returns:
             A list of png figures.
         """
-        # Do some stuff to create the figures.
-        hello.hello()
-        print(config_file)
-        os.system(f'mdtf_framework.py -f {config_file}')
-        return ["figure1.png", "figure2.png",]
+        #overwrite out_dir if dir exists
+        output_dir = os.path.join(out_dir, 'mdtf')
+        if os.path.isdir(output_dir):
+            shutil.rmtree(output_dir)
+        os.makedirs(output_dir)
+
+        # generate runtime_config files for each realm and freq combination
+        gen_config.generate_configs(config, out_dir, catalog)
+        
+        # run each config file
+        mdtf_script_path = os.path.join(MDTF_PACKAGE_PATH, "mdtf_framework.py")
+        for f in os.listdir(os.path.join(output_dir, 'config')):
+            cmd = [
+                'python',
+                mdtf_script_path,
+                '-f',
+                os.path.join(output_dir, 'config', f)   
+            ]
+            subprocess.run(cmd)
+
+        return grab_plots.grab_plots(out_dir)
