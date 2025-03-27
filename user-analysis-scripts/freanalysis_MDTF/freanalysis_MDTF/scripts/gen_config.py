@@ -25,7 +25,6 @@ def generate_configs(config: dict, out_dir, catalog):
     # add generic information to template
     template_config['DATA_CATALOG'] = catalog
     template_config['WORK_DIR'] = os.path.join(out_dir, "mdtf")
-    config['date_range']
     template_config['case_list']['case_name']['startdate'] = config['data_range'][0]
     template_config['case_list']['case_name']['enddate'] = config['data_range'][1]
 
