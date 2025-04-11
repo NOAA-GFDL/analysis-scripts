@@ -36,7 +36,6 @@ def generate_index(config: dict, out_dir):
                 pod_dir = os.path.join(d, p)
                 file_path = os.path.join(pod_dir, f'{p}.html')
                 if os.path.exists(file_path):
-                    print(p)
                     index_file.write(f'<a href="{file_path}"> {p} </a> <br>')
             
     index_file.close()
