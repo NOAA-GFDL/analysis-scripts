@@ -1,6 +1,6 @@
 from analysis_scripts import AnalysisScript
 import freanalysis_MDTF
-from freanalysis_MDTF.scripts import gen_config, grab_plots
+from freanalysis_MDTF.scripts import gen_config, gen_index, grab_plots
 import MDTF_diagnostics
 MDTF_PACKAGE_PATH = MDTF_diagnostics.__path__[0]
 import os
@@ -22,6 +22,8 @@ class MDTFAnalysisScript(AnalysisScript):
         self.description = "Wrapper to access the analysis framework and collection of process-oriented diagnostics for weather and climate simulations "
         self.title = "MDTF-diagnostics"
 
+    # TODO: I'm not entirely sure what to put here in the case of the MDTF.
+    # The MDTF will check for vars on it's own, so I'm not sure the what the best option will be!
     def requires(self):
         """Provides metadata describing what is needed for this analysis to run.
 
@@ -48,13 +50,12 @@ class MDTFAnalysisScript(AnalysisScript):
         Args:
             catalog: Path to a model output catalog
             out_dir: Directory to run and store the MDTF and output in (this replaces png_dir from the base class) 
-            config: Dictionary of configuration options. (REQUIRED [pods: list, startyr: str, endyr: str)
             reference_catalog: Path to a catalog of reference data. (OPTIONAL)
 
         Returns:
             A list of png figures.
         """
-        #overwrite out_dir if dir exists
+        # overwrite out_dir if dir exists
         output_dir = os.path.join(out_dir, 'mdtf')
         if os.path.isdir(output_dir):
             shutil.rmtree(output_dir)
@@ -62,16 +63,38 @@ class MDTFAnalysisScript(AnalysisScript):
 
         # generate runtime_config files for each realm and freq combination
         gen_config.generate_configs(config, out_dir, catalog)
-        
-        # run each config file
-        mdtf_script_path = os.path.join(MDTF_PACKAGE_PATH, "mdtf_framework.py")
-        for f in os.listdir(os.path.join(output_dir, 'config')):
+       
+        # decide which env to use
+        if config['use_gfdl_mdtf_env']:
+            cmd = [
+                '/home/oar.gfdl.mdtf/mdtf/MDTF-diagnostics',
+                '-f'
+            ] 
+        else:
             cmd = [
                 'python',
                 mdtf_script_path,
-                '-f',
-                os.path.join(output_dir, 'config', f)   
+                '-f'
             ]
+        # run each config file
+        mdtf_script_path = os.path.join(MDTF_PACKAGE_PATH, "mdtf_framework.py")
+        for f in os.listdir(os.path.join(output_dir, 'config')):
+            # decide which env to use
+            if config['use_gfdl_mdtf_env']:
+                cmd = [
+                    '/home/oar.gfdl.mdtf/mdtf/MDTF-diagnostics/mdtf',
+                    '-f',
+                    os.path.join(output_dir, 'config', f)
+                ]
+            else:
+                cmd = [
+                    'python',
+                    mdtf_script_path,
+                    '-f',
+                    os.path.join(output_dir, 'config', f)
+                ]
             subprocess.run(cmd)
 
-        return grab_plots.grab_plots(out_dir)
+        gen_index.generate_index(config, output_dir)    
+
+        return grab_plots.grab_plots(output_dir)

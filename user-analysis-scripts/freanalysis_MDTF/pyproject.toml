@@ -29,7 +29,8 @@ include-package-data = true
 
 [tool.setuptools.package-data]
 freanalysis_MDTF = [
-    'data/*'
+    'data/*',
+    'scripts/*'
 ]
 
 [project.urls]

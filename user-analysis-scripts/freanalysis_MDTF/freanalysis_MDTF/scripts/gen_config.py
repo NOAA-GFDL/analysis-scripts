@@ -7,9 +7,11 @@ import copy
 _FILE_PATH = os.path.dirname(os.path.realpath(__file__))
 
 def generate_configs(config: dict, out_dir, catalog):
-    
     # load pod information and template config file
-    pod_info_file = os.path.join(_FILE_PATH, '..', 'data/pod_info.json')    
+    if not config['custom_pod_info_json']:
+        pod_info_file = os.path.join(_FILE_PATH, '..', 'data/pod_info.json')
+    else:
+        pod_info_file = config['custom_pod_info_json']    
     try:
         with open(pod_info_file) as f:
             pod_info = json.load(f)
@@ -25,37 +27,27 @@ def generate_configs(config: dict, out_dir, catalog):
     # add generic information to template
     template_config['DATA_CATALOG'] = catalog
     template_config['WORK_DIR'] = os.path.join(out_dir, "mdtf")
-    template_config['case_list']['case_name']['startdate'] = config['data_range'][0]
-    template_config['case_list']['case_name']['enddate'] = config['data_range'][1]
+    template_config['case_list']['case_name']['startdate'] = str(config['data_range'][0])
+    template_config['case_list']['case_name']['enddate'] = str(config['data_range'][1])
 
+    if config['use_gfdl_mdtf_env']:
+        template_config['OBS_DATA_ROOT'] = '/home/oar.gfdl.mdtf/mdtf/inputdata/obs_data/'
+        template_config['conda_root'] = '/home/oar.gfdl.mdtf/miniconda3/'
+    else:
+        template_config['OBS_DATA_ROOT'] = config['obs_data_path']
+    
     # get only requested pod info
-    config_names = []
-    realms = []
+    config_files = {}
     for p in config['pods']:
         if p in pod_info:
-            realm = pod_info[p]['realm']
-            realms.append(realm)
-            freq = pod_info[p]['frequency']
-            config_name = f'{realm}_{freq}_config'
-            config_names.append(config_name)
+            config_name = f'{p}_config'
+            config_realm = pod_info[p]['realm']
+            config_files[config_name] = copy.deepcopy(template_config)
+            config_files[config_name]['case_list']['case_name']['realm'] = config_realm
+            config_files[config_name]['case_list'][config_realm] = config_files[config_name]['case_list'].pop('case_name')
+            config_files[config_name]['pod_list'].append(p)
         else:
             print(f'WARNING: {p} is not a supported POD; skipping requested POD')
-    config_names = set(config_names)
-    realms = set(realms)
-
-    # create dict of config files
-    config_files = {}
-    for c in config_names:
-        config_files[c] = copy.deepcopy(template_config)
-        for r in realms:
-            if r in c:
-                config_files[c]['case_list']['case_name']['realm'] = r
-                config_files[c]['case_list'][r] = config_files[c]['case_list'].pop('case_name')
-    
-    # add pods to cooresponding config file
-    for p in config['pods']:
-        config_file = f"{pod_info[p]['realm']}_{pod_info[p]['frequency']}_config"    
-        config_files[config_file]['pod_list'].append(p)
 
     # write out config files
     config_dir = os.path.join(out_dir, 'mdtf', 'config')

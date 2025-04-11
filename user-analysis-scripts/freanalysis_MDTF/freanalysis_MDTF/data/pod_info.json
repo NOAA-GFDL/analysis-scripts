@@ -1,22 +1,17 @@
 {
   "example": {
-    "realm": "atmos_cmip",
-    "frequency": "day"
+    "realm": "atmos_cmip"
   },
   "Wheeler_Kiladis": {
-    "realm": "atmos_cmip",
-    "frequency": "day"
+    "realm": "atmos_cmip"
   },
   "MJO_suite": {
-    "realm": "atmos_cmip",
-    "frequency": "day"
+    "realm": "atmos_cmip"
   },
   "ocn_surf_flux_diag": {
-    "realm": "atmos_cmip",
-    "frequency": "day"
+    "realm": "atmos_cmip"
   },
   "forcing_feedback": {
-    "realm": "atmos_cmip",
-    "frequency": "mon"
+    "realm": "atmos_cmip"
   }
 }
