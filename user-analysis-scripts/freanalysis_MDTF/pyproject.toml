@@ -1,0 +1,37 @@
+[build-system]
+requires = [
+    "setuptools >= 40.9.0",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "freanalysis_MDTF"
+version = "0.1"
+dependencies = [
+    "setuptools",
+    "MDTF-diagnostics@git+https://github.com/jtmims/MDTF-diagnostics@pip_refactor",
+]
+requires-python = ">= 3.6"
+authors = [
+    {name = "MDTF-Framework Team"},
+]
+maintainers = [
+    {name = "MDTF-Framework Team", email = "oar.gfdl.mdtf@noaa.gov"},
+]
+description = "The MDTF-diagnostics package is a portable framework for running process-oriented diagnostics (PODs) on weather and climate model data."
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python"
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+freanalysis_MDTF = [
+    'data/*',
+    'scripts/*'
+]
+
+[project.urls]
+repository = "https://github.com/NOAA-GFDL/analysis-scripts.git"
