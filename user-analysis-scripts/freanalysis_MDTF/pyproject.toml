@@ -9,7 +9,7 @@ name = "freanalysis_MDTF"
 version = "0.1"
 dependencies = [
     "setuptools",
-    "MDTF-diagnostics@git+https://github.com/jtmims/MDTF-diagnostics@pip_refactor",
+    "MDTF-diagnostics@git+https://github.com/NOAA-GFDL/MDTF-diagnostics@pip_refactor",
 ]
 requires-python = ">= 3.6"
 authors = [
