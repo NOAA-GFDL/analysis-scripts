@@ -215,7 +215,7 @@ class LandAnalysisScript(AnalysisScript):
         # Soil Carbon
         var = 'cSoil'
         print('Soil Carbon Analysis')
-        cat = col.search(variable_id=var, realm='land_cmip')
+        cat = col.search(variable_id=var)
         other_dict = cat.to_dataset_dict(cdf_kwargs={'chunks': {'time': 12}, 'decode_times': False})
         combined_dataset = xr.concat(list(dict(sorted(other_dict.items())).values()), dim='time')
 
@@ -240,7 +240,7 @@ class LandAnalysisScript(AnalysisScript):
         # Soil Moisture
         var = 'mrso'
         print ('Soil Moisture Analysis')
-        cat = col.search(variable_id=var,realm='land_cmip')
+        cat = col.search(variable_id=var)
         other_dict = cat.to_dataset_dict(cdf_kwargs={'chunks':{'time':12},'decode_times':False})
         combined_dataset = xr.concat(list(dict(sorted(other_dict.items())).values()), dim='time')
 
