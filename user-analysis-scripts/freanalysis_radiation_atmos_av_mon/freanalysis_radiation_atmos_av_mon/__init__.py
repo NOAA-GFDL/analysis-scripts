@@ -252,16 +252,20 @@ class RadiationVsCeresAnalysisScript(AnalysisScript):
         if config:
             query_params.update(config)
 
-        pdb.set_trace()
-        datasets = model_catalog.search(**query_params).to_dataset_dict(progressbar=False)
+        #pdb.set_trace()
+        search_results = model_catalog.search(**query_params)
+        print("model search results returned")
+        datasets = search_results.to_dataset_dict(progressbar=False)
         if len(list(datasets.values())) != 1:
             print(query_params, list(datasets.values()))
             raise ValueError("could not filter the catalog down to a single dataset.")
         dataset = list(datasets.values())[0]
+        print("Model dataset created")
 
         # Model Lon-lat maps.
         model_map = LonLatMap.from_xarray_dataset(dataset, variable, time_index=0,
                                                   time_method="instantaneous")
+        print("Model map created")
 
         # Connect to the reference catalog and get the reference datasets.
         obs_catalog = intake.open_esm_datastore(reference_catalog)
@@ -269,10 +273,13 @@ class RadiationVsCeresAnalysisScript(AnalysisScript):
             "experiment_id": "ceres_ebaf_ed4.1",
             "variable_id": reference_variable,
         }
-        datasets = obs_catalog.search(**query_params).to_dataset_dict(progressbar=False)
+        search_results = obs_catalog.search(**query_params)
+        print("obs search results returned")
+        datasets = search_results.to_dataset_dict(progressbar=False)
         if len(list(datasets.values())) != 1:
             raise ValueError("could not filter the catalog down to a single dataset.")
         dataset = list(datasets.values())[0]
+        print("Obs dataset created")
 
         if month_range == None:
             period = "annual"
@@ -293,11 +300,17 @@ class RadiationVsCeresAnalysisScript(AnalysisScript):
             dataset, reference_variable, f"{period} climatology",
             year_range=[2003, 2018], month_range=month_range,
         )
+        print("obs map created")
         obs_map.regrid_to_map(model_map)
+        print("obs map regridded")
 
         figure = chuck_radiation(model_map, obs_map, f"{title}")
+        print("chuck radiation")
+        #breakpoint()
         output = Path(png_dir) / f"{title.lower().replace(' ', '-')}.png"
+        print("path determined")
         figure.save(output)
+        print("figure saved")
         return output
 
 

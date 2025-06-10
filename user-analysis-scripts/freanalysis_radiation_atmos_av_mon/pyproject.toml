@@ -9,7 +9,7 @@ name = "freanalysis_radiation_atmos_av_mon"
 version = "0.1"
 dependencies = [
     "intake",
-    "intake-esm",
+    "intake-esm@git+https://github.com/intake/intake-esm#egg=eb15a2fb4db9c1d9011761eab8d0f64d39ca69f8",
 ]
 requires-python = ">= 3.6"
 authors = [
